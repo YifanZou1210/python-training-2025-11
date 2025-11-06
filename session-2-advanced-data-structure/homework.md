@@ -1,4 +1,4 @@
-```markdown
+
 # Python Interview Questions & Coding Challenges - Session 2
 
 ## Concept Questions
