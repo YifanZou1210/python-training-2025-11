@@ -27,6 +27,7 @@ You may assume that each input would have exactly one solution, and you may not 
 
 **Function Signature:**
 ```python
+from collections import defaultdict
 def two_sum(nums: list[int], target: int) -> list[int]:
     """
     Find two numbers that add up to target.
@@ -45,7 +46,12 @@ def two_sum(nums: list[int], target: int) -> list[int]:
         >>> two_sum([3, 2, 4], 6)
         [1, 2]
     """
-    pass
+    dic = defaultdict(int)
+    for i, e in enumerate(nums):
+        if target-e in dic:
+            return [i, dic[target-e]]
+        dic[e] = i 
+
 ```
 
 ---
@@ -80,7 +86,19 @@ def length_of_longest_substring(s: str) -> int:
         >>> length_of_longest_substring("pwwkew")
         3  # "wke"
     """
-    pass
+    l = 0
+    mxl = 0 
+    dic = defaultdict(int)
+    for r in range(len(s)):
+        dic[s[r]]+=1
+        while r-l+1>len(dic):
+            dic[s[l]]-=1
+            if not dic[s[l]]:
+                del dic[s[l]]
+            l+=1
+        if r-l+1==len(dic):
+            mxl = max(mxl, r-l+1)
+    return mxl
 ```
 
 ---
@@ -116,7 +134,15 @@ def product_except_self(nums: list[int]) -> list[int]:
         >>> product_except_self([-1, 1, 0, -3, 3])
         [0, 0, 9, 0, 0]
     """
-    pass
+    n = len(nums)
+    pre, suf = [1]*n, [1]*n
+    for i in range(1,n):
+        pre[i] = pre[i-1]*nums[i-1]
+    # print(pre)
+    for i in range(n-2, -1, -1):
+        suf[i] = suf[i+1]*nums[i+1]
+    # print(suf)
+    return [l*r for l, r in zip(pre, suf)]
 ```
 
 ---
@@ -151,5 +177,9 @@ def group_anagrams(strs: list[str]) -> list[list[str]]:
         >>> group_anagrams(["a"])
         [["a"]]
     """
-    pass
+    dic = defaultdict(list)
+    for i, e in enumerate(strs):
+        k = ''.join(sorted(e))
+        dic[k].append(e)
+    return [e for e in dic.values()]
 ```
