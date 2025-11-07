@@ -3,15 +3,46 @@
 ## Concept Questions
 
 * What is a lambda function, and how is it different from a regular function in Python?
+  A lambda function is an anonymous, inline function defined with `lambda` keyword. It can take any number of arguments but has only one expression. Unlike regular functions defined with `def`, it does not have a name and cannot contain multiple statements.
+
 * What is the difference between `*args` and `**kwargs` in function definitions?
+  `*args` collects extra positional arguments as a tuple, while `**kwargs` collects extra keyword arguments as a dictionary.
+
 * What is LEGB? Explain LEGB rule with a code example
+  LEGB stands for Local, Enclosing, Global, Built-in, the order Python searches for variables. Example:
+
+```python
+x = "global"
+def outer():
+    x = "enclosing"
+    def inner():
+        x = "local"
+        print(x)  # prints "local"
+    inner()
+outer()
+```
+
 * What is a closure in Python? How is it different from a regular nested function?
+  A closure is a nested function that remembers values from its enclosing scope even after the outer function has finished execution. Regular nested functions do not retain these values once the outer function ends.
+
 * What is the purpose of `if __name__ == "__main__":`?
+  It ensures that a Python file runs certain code only when executed directly, not when imported as a module.
+
 * Can you modify a global variable inside a function without using the `global` keyword?
+  No, to reassign a global variable inside a function, you must use `global`. You can, however, mutate mutable objects like lists or dictionaries without `global`.
+
 * In what order must you define parameters in a function signature?
+  Positional arguments → default arguments → `*args` → keyword-only arguments → `**kwargs`.
+
 * What is the difference between the `global` and `nonlocal` keywords?
+  `global` allows modifying variables at the module level. `nonlocal` allows modifying variables in the nearest enclosing non-global scope.
+
 * What is a common pitfall when using mutable default arguments?
+  Using mutable defaults (like lists or dictionaries) can lead to unexpected shared state across function calls.
+
 * What is a higher-order function? Give examples of built-in higher-order functions
+  A higher-order function takes functions as arguments or returns a function. Examples: `map()`, `filter()`, `reduce()`, `sorted()` with key function.
+
 
 
 ---
@@ -57,7 +88,9 @@ def fibonacci(n: int) -> int:
         >>> fibonacci(50)
         12586269025
     """
-    pass
+    if n == 0:
+        return 0 
+    return fibonacci(n-1)+fibonacci(n-2)
 ```
 
 ---
@@ -95,7 +128,13 @@ def find_max_nested(nested_list: list) -> int:
         >>> find_max_nested([10, [20, [30, [40, [50]]]]])
         50
     """
-    pass
+    mx = float('-inf')
+    for e in nested_list:
+        if isinstance(e, int):
+            mx = max(mx, e)
+        elif isinstance(e, list):
+            mx = max(mx, find_max_nested(e))
+    return mx
 ```
 
 ---
@@ -143,7 +182,15 @@ def reverse_string(s: str) -> str:
         >>> reverse_string("racecar")
         "racecar"
     """
-    pass
+    nums = list(s)
+    def recur(l, r):
+        if l >= r:      
+            return
+        nums[l], nums[r] = nums[r], nums[l]  # 交换
+        recur(l + 1, r - 1)
+    
+    recur(0, len(nums) - 1)
+    return ''.join(nums) 
 ```
 
 ---
