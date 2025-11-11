@@ -2,29 +2,207 @@
 
 ## Concept Questions
 
-* What are the four principles of OOP?
-* What's the difference between `__str__` and `__repr__` magic methods?
-* How do magic methods like `__eq__` affect object comparison?
-* Explain the difference between `@classmethod` and `@staticmethod`
-* What are property decorators in Python?
-* What's the difference between public, protected (`_`), and private (`__`) attributes?
-* What's Singleton pattern? How to implement it?
-* What's Factory pattern? How to implement it?
-* What is the `self` parameter?
-* What are abstract base classes (ABC) in Python?
+Sure — here’s the structured **Q&A format** covering each OOP concept concisely and professionally:
 
 ---
 
-## Coding Questions
+**1. What are the four principles of OOP?**
+* **Encapsulation** – Hides internal data; accessed through public methods or properties.
+* **Abstraction** – Exposes only essential behavior; hides complexity.
+* **Inheritance** – Allows classes to derive and extend functionality from a base class.
+* **Polymorphism** – Enables different classes to define methods with the same name but different behaviors.
 
-# Library Management System - Requirements Specification
+**Example:**
 
-## Overview
+```python
+class Animal:
+    def speak(self): pass
+
+class Dog(Animal):
+    def speak(self): return "Woof"
+
+class Cat(Animal):
+    def speak(self): return "Meow"
+```
+
+---
+
+**2. What's the difference between `__str__` and `__repr__` magic methods?**
+
+ 
+
+* `__str__`: For **readable** string representation (used by `print()` or `str()`).
+* `__repr__`: For **developer/debug** representation (used by `repr()` or console).
+
+**Example:**
+
+```python
+class Book:
+    def __str__(self):
+        return "Readable: Book Info"
+    def __repr__(self):
+        return "Book(title='X', author='Y')"
+```
+
+---
+
+**3. How do magic methods like `__eq__` affect object comparison?**
+
+ 
+
+* `__eq__` defines how objects are compared using `==`.
+* Without it, equality compares **object identity (memory address)** by default.
+
+**Example:**
+
+```python
+class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+```
+
+---
+
+**4. Explain the difference between `@classmethod` and `@staticmethod`.**
+
+ 
+
+* `@classmethod`: Receives the **class itself (`cls`)** as the first argument; can modify class state.
+* `@staticmethod`: Receives **no automatic first argument**; behaves like a regular function in a class.
+
+**Example:**
+
+```python
+class Example:
+    count = 0
+
+    @classmethod
+    def set_count(cls, value):
+        cls.count = value
+
+    @staticmethod
+    def add(x, y):
+        return x + y
+```
+
+---
+
+**5. What are property decorators in Python?**
+
+ 
+Used to define **getter/setter/deleter** for attributes — enabling **controlled access** like Java getters/setters.
+
+**Example:**
+
+```python
+class Person:
+    def __init__(self, age):
+        self._age = age
+
+    @property
+    def age(self):
+        return self._age
+
+    @age.setter
+    def age(self, value):
+        if value < 0:
+            raise ValueError("Invalid age")
+        self._age = value
+```
+
+---
+
+**6. What's the difference between public, protected (`_`), and private (`__`) attributes?**
+
+ 
+
+| Type      | Prefix | Access Level                               | Example         |
+| --------- | ------ | ------------------------------------------ | --------------- |
+| Public    | none   | Accessible anywhere                        | `self.name`     |
+| Protected | `_`    | Conventionally internal (not enforced)     | `self._balance` |
+| Private   | `__`   | Name-mangled; accessible only within class | `self.__secret` |
+
+---
+
+**7. What's Singleton pattern? How to implement it?**
+
+ 
+Ensures **only one instance** of a class exists.
+
+**Example:**
+
+```python
+class Singleton:
+    _instance = None
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+```
+
+---
+
+**8. What's Factory pattern? How to implement it?**
+
+ 
+Provides a **method to create objects** without specifying exact class names.
+
+**Example:**
+
+```python
+class ShapeFactory:
+    def get_shape(self, shape_type):
+        if shape_type == "circle": return Circle()
+        if shape_type == "square": return Square()
+```
+
+---
+
+**9. What is the `self` parameter?**
+
+ 
+Represents the **current instance** of a class; used to access instance variables and methods.
+
+**Example:**
+
+```python
+class Car:
+    def __init__(self, brand):
+        self.brand = brand
+```
+
+---
+
+**10. What are abstract base classes (ABC) in Python?**
+
+ 
+Define **interfaces** that subclasses must implement, using `abc` module.
+
+**Example:**
+
+```python
+from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    @abstractmethod
+    def speak(self):
+        pass
+```
+
+---
+
+### Coding Questions
+
+Library Management System - Requirements Specification
+
+#### Overview
 Design and implement a Library Management System that demonstrates OOP principles, design patterns, and Python best practices. The system manages books, DVDs, members, and borrowing operations.
 
 ---
 
-## Functional Requirements
+### Functional Requirements
 
 ### FR1: Library Item Management
 - **FR1.1**: Add library items (books and DVDs) with title, creator, and available copies (ID auto-generated)
