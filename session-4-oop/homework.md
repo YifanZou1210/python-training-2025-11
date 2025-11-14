@@ -2,10 +2,6 @@
 
 ## Concept Questions
 
-Sure — here’s the structured **Q&A format** covering each OOP concept concisely and professionally:
-
----
-
 **1. What are the four principles of OOP?**
 * **Encapsulation** – Hides internal data; accessed through public methods or properties.
 * **Abstraction** – Exposes only essential behavior; hides complexity.

@@ -43,9 +43,12 @@ def cache_with_log(func):
     Cache decorator that logs all activity.
     Should work with any function signature.
     """
-    
+    def make_key(args, kwargs):
+        kwagrs_items = frozenset(kwargs.items()) if kwargs else frozenset() 
+        return (args, kwargs_items)
+
     def wrapper(*args, **kwargs):
-        pass
+        key = make_key(args, kwargs)
     
     return wrapper
 

@@ -94,3 +94,230 @@ outer()
 * What is a higher-order function? Give examples of built-in higher-order functions
   A higher-order function takes functions as arguments or returns a function. Examples: `map()`, `filter()`, `reduce()`, `sorted()` with key function.
 
+---
+
+**1. What are the four principles of OOP?**
+* **Encapsulation** – Hides internal data; accessed through public methods or properties.
+* **Abstraction** – Exposes only essential behavior; hides complexity.
+* **Inheritance** – Allows classes to derive and extend functionality from a base class.
+* **Polymorphism** – Enables different classes to define methods with the same name but different behaviors.
+
+**Example:**
+
+```python
+class Animal:
+    def speak(self): pass
+
+class Dog(Animal):
+    def speak(self): return "Woof"
+
+class Cat(Animal):
+    def speak(self): return "Meow"
+```
+
+
+**2. What's the difference between `__str__` and `__repr__` magic methods?**
+
+ 
+
+* `__str__`: For **readable** string representation (used by `print()` or `str()`).
+* `__repr__`: For **developer/debug** representation (used by `repr()` or console).
+
+**Example:**
+
+```python
+class Book:
+    def __str__(self):
+        return "Readable: Book Info"
+    def __repr__(self):
+        return "Book(title='X', author='Y')"
+```
+
+
+**3. How do magic methods like `__eq__` affect object comparison?**
+
+ 
+
+* `__eq__` defines how objects are compared using `==`.
+* Without it, equality compares **object identity (memory address)** by default.
+
+**Example:**
+
+```python
+class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+```
+
+
+**4. Explain the difference between `@classmethod` and `@staticmethod`.**
+
+ 
+
+* `@classmethod`: Receives the **class itself (`cls`)** as the first argument; can modify class state.
+* `@staticmethod`: Receives **no automatic first argument**; behaves like a regular function in a class.
+
+**Example:**
+
+```python
+class Example:
+    count = 0
+
+    @classmethod
+    def set_count(cls, value):
+        cls.count = value
+
+    @staticmethod
+    def add(x, y):
+        return x + y
+```
+
+
+**5. What are property decorators in Python?**
+
+ 
+Used to define **getter/setter/deleter** for attributes — enabling **controlled access** like Java getters/setters.
+
+**Example:**
+
+```python
+class Person:
+    def __init__(self, age):
+        self._age = age
+
+    @property
+    def age(self):
+        return self._age
+
+    @age.setter
+    def age(self, value):
+        if value < 0:
+            raise ValueError("Invalid age")
+        self._age = value
+```
+
+
+**6. What's the difference between public, protected (`_`), and private (`__`) attributes?**
+
+ 
+
+| Type      | Prefix | Access Level                               | Example         |
+| --------- | ------ | ------------------------------------------ | --------------- |
+| Public    | none   | Accessible anywhere                        | `self.name`     |
+| Protected | `_`    | Conventionally internal (not enforced)     | `self._balance` |
+| Private   | `__`   | Name-mangled; accessible only within class | `self.__secret` |
+
+
+**7. What's Singleton pattern? How to implement it?**
+
+ 
+Ensures **only one instance** of a class exists.
+
+**Example:**
+
+```python
+class Singleton:
+    _instance = None
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+```
+
+
+**8. What's Factory pattern? How to implement it?**
+
+ 
+Provides a **method to create objects** without specifying exact class names.
+
+**Example:**
+
+```python
+class ShapeFactory:
+    def get_shape(self, shape_type):
+        if shape_type == "circle": return Circle()
+        if shape_type == "square": return Square()
+```
+
+
+**9. What is the `self` parameter?**
+
+ 
+Represents the **current instance** of a class; used to access instance variables and methods.
+
+**Example:**
+
+```python
+class Car:
+    def __init__(self, brand):
+        self.brand = brand
+```
+
+
+**10. What are abstract base classes (ABC) in Python?**
+
+ 
+Define **interfaces** that subclasses must implement, using `abc` module.
+
+**Example:**
+
+```python
+from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    @abstractmethod
+    def speak(self):
+        pass
+```
+
+---
+
+* **What is a decorator in Python, and where is it used?**
+  A callable that wraps another function or method to modify or enhance its behavior without changing its code; commonly used for logging, authentication, caching, or timing.
+* **What's the difference between a generator and a regular function that returns a list?**
+  A generator yields items one at a time lazily, consuming less memory; a regular function builds and returns the entire list at once, consuming memory for all elements immediately.
+* **When would you choose generators over lists, and what are the memory implications?**
+  Use generators for large or infinite sequences to avoid storing all elements in memory; memory usage is minimal since only the current element is kept.
+* **Explain the difference between threading, multiprocessing, and asyncio in Python**
+  Threading: multiple threads share memory, good for IO-bound; Multiprocessing: separate processes, each with own memory, bypasses GIL, good for CPU-bound; Asyncio: single-threaded cooperative concurrency, efficient for high-latency IO tasks.
+* **What is the Global Interpreter Lock (GIL)? How does it affect threading and multiprocessing?**
+  GIL allows only one Python bytecode instruction to execute at a time per process; threading is limited for CPU-bound tasks, multiprocessing bypasses GIL and can fully use multiple cores.
+* **When to use threading, asyncio, multiprocess?**
+  Threading: IO-bound tasks; Asyncio: high-concurrency IO tasks; Multiprocessing: CPU-bound tasks needing parallel execution.
+* **What are CPU-bound vs IO-bound tasks?**
+  CPU-bound: tasks limited by computation speed; IO-bound: tasks limited by input/output latency, e.g., network, disk.
+* **What's the difference between yield and return in a function**
+  `return` sends a final value and exits the function; `yield` produces a value and pauses function, allowing iteration to resume later.
+* **What's the difference between using open() with explicit close() vs using the with statement**
+  Explicit close() requires manual cleanup; `with` ensures automatic resource release even if exceptions occur.
+* **How to handle exceptions? Why is exception handling important?**
+  Use try-except blocks to catch and respond to errors; important to prevent crashes, maintain program flow, and provide meaningful error messages.
+
+---
+
+- What are primary keys and foreign keys? How are they used in relational databases?
+  - A primary key is a column or set of columns in a table that uniquely identifies each row. A foreign key is a column or set of columns in one table that refers to the primary key in another table, establishing a relationship between the two tables. They are used to enforce data integrity and relational links between tables.
+
+- What is the difference between INNER JOIN, LEFT JOIN, and FULL OUTER JOIN
+  - INNER JOIN returns only the rows that have matching values in both tables. LEFT JOIN returns all rows from the left table and the matched rows from the right table, with NULLs for unmatched rows. FULL OUTER JOIN returns all rows when there is a match in either table, filling in NULLs for missing matches.
+
+- What is normalization?
+  - Normalization is the process of organizing database tables and columns to reduce redundancy and improve data integrity, typically through a series of normal forms (1NF, 2NF, 3NF, etc.).
+
+- What are the different types of database relationships (1:1, 1:many, many:many) and how do you implement them in SQL?
+  - 1:1 relationship: each row in Table A is linked to exactly one row in Table B. Implemented by having a foreign key in either table referencing the other’s primary key with UNIQUE constraint.
+  - 1:many relationship: each row in Table A can be linked to multiple rows in Table B. Implemented by having a foreign key in the “many” table referencing the primary key of the “one” table.
+  - Many:many relationship: rows in Table A can be linked to multiple rows in Table B and vice versa. Implemented using a junction table with foreign keys referencing both tables.
+
+- What are transactions and isolation levels? Explain the problems each isolation level solves.
+  - Transactions are sequences of database operations executed as a single unit. Isolation levels control visibility of changes between concurrent transactions.
+
+  * Read Uncommitted: allows dirty reads; solves no problem, lowest isolation.
+  * Read Committed: prevents dirty reads; solves the dirty read problem.
+  * Repeatable Read: prevents dirty and non-repeatable reads; solves dirty and non-repeatable read problems.
+  * Serializable: prevents dirty, non-repeatable, and phantom reads; ensures full isolation, highest level.
+
+- What's the difference between PRIMARY KEY, UNIQUE, and FOREIGN KEY constraints?
+  - PRIMARY KEY enforces unique and non-null values for the column(s). UNIQUE enforces uniqueness but allows one NULL per column (depending on DBMS). FOREIGN KEY enforces referential integrity by linking to a primary key in another table.
