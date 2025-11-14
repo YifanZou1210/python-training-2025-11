@@ -1,21 +1,31 @@
 # Python Coding Questions - Session 3: Recursion & Functions
 
 ## Concept Questions
-- What is a decorator in Python, and where is it used?
-- What's the difference between a generator and a regular function that returns a list?
-- When would you choose generators over lists, and what are the memory implications?
-- Explain the difference between threading, multiprocessing, and asyncio in Python
-- What is the Global Interpreter Lock (GIL)? How does it affect threading and multiprocessing?
-- When to use threading, asyncio, multiprocess?
-- What are CPU-bound vs IO-bound tasks?
-- What's the difference between yield and return in a function
-- What's the difference between using open() with explicit close() vs using the with statement
-- How to handle exceptions? Why is exception handling important?
+* **What is a decorator in Python, and where is it used?**
+  A callable that wraps another function or method to modify or enhance its behavior without changing its code; commonly used for logging, authentication, caching, or timing.
+* **What's the difference between a generator and a regular function that returns a list?**
+  A generator yields items one at a time lazily, consuming less memory; a regular function builds and returns the entire list at once, consuming memory for all elements immediately.
+* **When would you choose generators over lists, and what are the memory implications?**
+  Use generators for large or infinite sequences to avoid storing all elements in memory; memory usage is minimal since only the current element is kept.
+* **Explain the difference between threading, multiprocessing, and asyncio in Python**
+  Threading: multiple threads share memory, good for IO-bound; Multiprocessing: separate processes, each with own memory, bypasses GIL, good for CPU-bound; Asyncio: single-threaded cooperative concurrency, efficient for high-latency IO tasks.
+* **What is the Global Interpreter Lock (GIL)? How does it affect threading and multiprocessing?**
+  GIL allows only one Python bytecode instruction to execute at a time per process; threading is limited for CPU-bound tasks, multiprocessing bypasses GIL and can fully use multiple cores.
+* **When to use threading, asyncio, multiprocess?**
+  Threading: IO-bound tasks; Asyncio: high-concurrency IO tasks; Multiprocessing: CPU-bound tasks needing parallel execution.
+* **What are CPU-bound vs IO-bound tasks?**
+  CPU-bound: tasks limited by computation speed; IO-bound: tasks limited by input/output latency, e.g., network, disk.
+* **What's the difference between yield and return in a function**
+  `return` sends a final value and exits the function; `yield` produces a value and pauses function, allowing iteration to resume later.
+* **What's the difference between using open() with explicit close() vs using the with statement**
+  Explicit close() requires manual cleanup; `with` ensures automatic resource release even if exceptions occur.
+* **How to handle exceptions? Why is exception handling important?**
+  Use try-except blocks to catch and respond to errors; important to prevent crashes, maintain program flow, and provide meaningful error messages.
 
 ---
 
 ## Coding Questions
-### Coding Problem 1: Docorator
+### Coding Problem 1: Decorator
 
 **Problem:**  
 Decorator to cache any function return and log hits/misses
