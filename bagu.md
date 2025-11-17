@@ -95,6 +95,7 @@ outer()
   A higher-order function takes functions as arguments or returns a function. Examples: `map()`, `filter()`, `reduce()`, `sorted()` with key function.
 
 ---
+# session-4-oop
 
 **1. What are the four principles of OOP?**
 * **Encapsulation** – Hides internal data; accessed through public methods or properties.
@@ -118,7 +119,6 @@ class Cat(Animal):
 
 **2. What's the difference between `__str__` and `__repr__` magic methods?**
 
- 
 
 * `__str__`: For **readable** string representation (used by `print()` or `str()`).
 * `__repr__`: For **developer/debug** representation (used by `repr()` or console).
@@ -136,8 +136,6 @@ class Book:
 
 **3. How do magic methods like `__eq__` affect object comparison?**
 
- 
-
 * `__eq__` defines how objects are compared using `==`.
 * Without it, equality compares **object identity (memory address)** by default.
 
@@ -153,8 +151,6 @@ class Point:
 
 
 **4. Explain the difference between `@classmethod` and `@staticmethod`.**
-
- 
 
 * `@classmethod`: Receives the **class itself (`cls`)** as the first argument; can modify class state.
 * `@staticmethod`: Receives **no automatic first argument**; behaves like a regular function in a class.
@@ -274,6 +270,8 @@ class Animal(ABC):
 
 ---
 
+# session-5-advanced concept of python 
+
 * **What is a decorator in Python, and where is it used?**
   A callable that wraps another function or method to modify or enhance its behavior without changing its code; commonly used for logging, authentication, caching, or timing.
 * **What's the difference between a generator and a regular function that returns a list?**
@@ -297,14 +295,16 @@ class Animal(ABC):
 
 ---
 
+# session-6-db
+
 - What are primary keys and foreign keys? How are they used in relational databases?
   - A primary key is a column or set of columns in a table that uniquely identifies each row. A foreign key is a column or set of columns in one table that refers to the primary key in another table, establishing a relationship between the two tables. They are used to enforce data integrity and relational links between tables.
 
 - What is the difference between INNER JOIN, LEFT JOIN, and FULL OUTER JOIN
   - INNER JOIN returns only the rows that have matching values in both tables. LEFT JOIN returns all rows from the left table and the matched rows from the right table, with NULLs for unmatched rows. FULL OUTER JOIN returns all rows when there is a match in either table, filling in NULLs for missing matches.
 
-- What is normalization?
-  - Normalization is the process of organizing database tables and columns to reduce redundancy and improve data integrity, typically through a series of normal forms (1NF, 2NF, 3NF, etc.).
+- What is normalization? 数据库范式
+  - Normalization is the process of organizing database tables and columns to reduce redundancy and improve data integrity, typically through a series of normal forms (1NF first normal form, 2NF, 3NF, etc.).
 
 - What are the different types of database relationships (1:1, 1:many, many:many) and how do you implement them in SQL?
   - 1:1 relationship: each row in Table A is linked to exactly one row in Table B. Implemented by having a foreign key in either table referencing the other’s primary key with UNIQUE constraint.
