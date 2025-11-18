@@ -40,5 +40,30 @@ CREATE TABLE members (
 
 CREATE Table membership (
     id serial PRIMARY KEY, 
-    member_id 
+    member_id integer NOT NULL UNIQUE,
+    membership_type VARCHAR(20) NOT NULL,
+    borrow_limit INTEGER NOT NULL,
+    expiry_date DATE NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Foreign Key (member_id) REFERENCES members(id) on delete CASCADE
+)
+
+CREATE Table borrowed_items (
+    id INTEGER PRIMARY KEY serial,
+    member_id INTEGER NOT NULL,
+    item_id INTEGER NOT NULL,
+    borrow_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    return_date TIMESTAMP,
+    status VARCHAR(20) NOT NULL DEFAULT 'borrowed',
+    Foreign Key (member_id) REFERENCES  members(id) on delete CASCADE,
+    Foreign Key (item_id) REFERENCES library_items(id) on delete CASCADE
+)
+
+CREATE Table waiting_list (
+    id INTEGER PRIMARY KEY serial,
+    member_id INTEGER NOT NULL,
+    item_id INTEGER NOT NULL,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
 )
