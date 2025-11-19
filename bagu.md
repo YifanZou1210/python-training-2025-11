@@ -321,3 +321,127 @@ class Animal(ABC):
 
 - What's the difference between PRIMARY KEY, UNIQUE, and FOREIGN KEY constraints?
   - PRIMARY KEY enforces unique and non-null values for the column(s). UNIQUE enforces uniqueness but allows one NULL per column (depending on DBMS). FOREIGN KEY enforces referential integrity by linking to a primary key in another table.
+
+---
+# session-7-database-advanced 
+
+### 1. 视图、物化视图、表的区别
+
+What's difference between View, Materialized View, and Table
+
+* **表（Table）**：真实存储数据。
+* **视图（View）**：不存数据，实时查询底层 SQL。
+* **物化视图（Materialized View）**：存储查询结果，需要刷新。
+
+A table actually stores your data; it's the real thing. A view is just a saved query—like a lens that shows data from tables but doesn’t store anything itself. A materialized view is basically a precomputed view where the results are stored like a snapshot, so reads are faster but you need to refresh it. You’d use tables for your real data, views to simplify queries, and materialized views for heavy analytical reads where speed matters.
+
+### 2. 什么是 ORM？为什么需要 ORM？
+
+What is ORM? Why do we need ORM?
+
+ORM 将数据库表映射为编程语言对象，让开发者用对象操作数据而不写 SQL。
+优点：减少 SQL、避免注入、管理事务与关系、跨数据库迁移容易。
+
+ORM is a way to map your code’s classes to database tables so you can work with data using objects instead of writing SQL everywhere. It helps keep code cleaner, safer, and easier to maintain, especially in large codebases. You still need SQL sometimes, but ORM handles the boring boilerplate for you.
+
+
+### 3. ACID 属性解释
+
+Explain the ACID Properties
+
+* **原子性 atomicity**：全部成功或全部失败
+* **一致性 consistency**：数据规则不被破坏
+* **隔离性 isolation**：并发事务互不干扰
+* **持久性 durability**：提交后数据不会丢失
+
+确保数据库不会出现脏写、部分更新或数据丢失。
+
+ACID means a transaction is all-or-nothing (Atomic), always leaves data valid (Consistent), doesn’t get messed up by other transactions (Isolated), and stays saved once committed (Durable). Together, these properties make sure your database doesn’t end up in a broken or half-updated state.
+
+
+### 4. CAP 定理
+
+Explain the CAP Theorem
+
+
+分布式系统无法同时满足：一致性、可用性、分区容错性；
+实际中必须在 **CP**（放弃可用） 或 **AP**（放弃强一致）中选择。
+
+CAP says a distributed system can’t give you perfect Consistency, Availability, and Partition Tolerance at the same time. Since network partitions always happen, you must pick between stronger consistency (CP) or higher availability (AP). It’s a trade-off, not a bug.
+
+
+### 5. SQL 与 NoSQL 的使用场景
+
+When choose SQL vs NoSQL?
+
+SQL：结构化数据、复杂查询、事务要求强（银行、订单）。
+NoSQL：超大规模、灵活结构、高并发读写（日志、社交、缓存）。
+
+SQL fits systems with structured data, clear relationships, and strong transaction requirements. NoSQL shines when you need huge scale, flexible data shapes, or extremely high read/write throughput. It's more about choosing the right tool for the pattern of your data and traffic.
+
+---
+
+### 6. 什么是最终一致性
+
+What is Eventual Consistency?
+
+*Eventual consistency means updates might not show up instantly everywhere, but if nothing else changes, all nodes will eventually catch up and show the same data. It trades immediate correctness for better performance and availability.
+
+---
+
+### 7. 分布式系统的一致性模型
+
+What's difference between Consistency Models: Strong, Weak, Eventual
+
+* **强一致性**：每次读取都是最新值
+* **弱一致性**：不保证读取最新值
+* **最终一致性**：短期不一致，最终收敛
+
+Strong consistency means every read sees the latest write. Weak consistency makes no such promise. Eventual consistency is in the middle—you might read stale data now, but the system will synchronize over time. It's about choosing speed vs correctness.
+
+
+### 8. 横向扩展 vs 纵向扩展
+
+What's difference between Horizontal vs Vertical Scaling
+
+* **横向扩展**：加机器；分布式扩容；可线性扩展。
+* **纵向扩展**：提升单机性能；受硬件极限限制。
+
+* **Horizontal**: Add more servers
+* **Vertical**: Add more CPU/RAM to one machine
+Vertical scaling means giving a single machine more power. Horizontal scaling means adding more machines to share the load. Scaling out is more flexible long-term but requires more distributed-system thinking.
+
+### 9. MongoDB 如何支持 ACID
+
+### (How does MongoDB handle ACID?)
+
+**答案（中文）**
+
+* 单文档天然 ACID
+* 多文档事务（4.0+）支持完整 ACID
+* 分片集群仍是最终一致（复制延迟）
+* 事务开销大，仅在需要时使用
+
+**Answer (English)**
+
+* Single-document ops are inherently ACID
+* Multi-doc ACID transactions supported since 4.0
+* Sharded clusters remain eventually consistent
+* Transactions are expensive; use only when needed
+MongoDB is fully ACID for single-document updates. Since version 4.0 it also supports multi-document transactions, making it behave much more like a relational DB when needed. But multi-document transactions cost performance, so MongoDB encourages embedding related data in one document.
+
+
+### 10. 什么是分片？和分区有何区别？
+
+What is Sharding? How does it differ from Partitioning?
+
+* **分片**：把数据拆到多台服务器（分布式横向扩展）
+* **分区**：把单表拆成多个逻辑/物理分区（同一服务器内部）
+
+**区别：**分片=跨机器；分区=单机内部。
+
+* **Sharding**: Split data across multiple servers
+* **Partitioning**: Split data within one server/table
+
+Partitioning splits data inside one database instance. Sharding splits data across multiple servers, each holding part of the dataset. Sharding is basically distributed partitioning and helps scale out when one machine can’t handle the load.
+

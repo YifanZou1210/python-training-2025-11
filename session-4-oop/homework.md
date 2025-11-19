@@ -189,7 +189,7 @@ class Animal(ABC):
 
 ---
 
-### Coding Questions
+## Coding Questions
 
 Library Management System - Requirements Specification
 

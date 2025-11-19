@@ -23,6 +23,7 @@ async def fake_non_blocking_IO_task(name):
     # asyncio.to_thread(func, *args, **kwargs) func: blocking function 
     # return coroutine object, 需要await才能得到func实际返回值 = func(*args, **kwargs)
     asyncio.to_thread(fake_non_blocking_IO_task(), "name")
+    # asyncio.to_thread()
     print(f'{name} done')
     
 def execute_blocking_tasks():
