@@ -447,4 +447,115 @@ Partitioning splits data inside one database instance. Sharding splits data acro
 
 ---
 # session-8-http-flask
+**How does routing work in Flask?**
+
+Routing in Flask works by associating URLs with Python functions using decorators like `@app.route('/path')`. When a request matches the URL pattern, Flask calls the corresponding function to handle it.
+
+**What is restful service**
+
+A RESTful service is a web service that follows REST principles: stateless communication, resource-based URLs, standard HTTP methods (GET, POST, PUT, DELETE), and representation in JSON or XML.
+
+**What are the categories of HTTP status codes (1xx, 2xx, 3xx, 4xx, 5xx)? Provide examples for each.**
+
+* 1xx: Informational (e.g., 100 Continue)
+* 2xx: Success (e.g., 200 OK, 201 Created)
+* 3xx: Redirection (e.g., 301 Moved Permanently, 302 Found)
+* 4xx: Client error (e.g., 400 Bad Request, 404 Not Found)
+* 5xx: Server error (e.g., 500 Internal Server Error, 503 Service Unavailable)
+
+**What is HTTP and how does it work**
+
+HTTP (Hypertext Transfer Protocol) is a request-response protocol where clients (browsers, apps) send requests to servers over TCP, and servers respond with status codes and content.
+
+**Explain the concept of idempotency in HTTP methods**
+
+Idempotency means that performing the same HTTP request multiple times has the same effect as performing it once. For example, GET, PUT, and DELETE are idempotent; POST is generally not.
+
+**Explain the difference between HTTP and HTTPS**
+
+HTTP is unsecured and sends data in plaintext; HTTPS uses SSL/TLS to encrypt communication, ensuring confidentiality and integrity.
+
+**Design a RESTful API for a blogging platform**
+
+* `GET /posts` → list all posts
+* `GET /posts/<id>` → get a single post
+* `POST /posts` → create a new post
+* `PUT /posts/<id>` → update a post
+* `DELETE /posts/<id>` → delete a post
+* `GET /posts/<id>/comments` → list comments for a post
+
+**What is the MVC architecture**
+
+MVC architecture separates an application into:
+
+* Model → data and business logic
+* View → user interface
+* Controller → handles input and updates Model/View
+
+**What are Flask's request objects**
+
+Flask’s request objects encapsulate HTTP request data, including:
+
+* `request.args` → query parameters
+* `request.form` → form data
+* `request.json` → JSON payload
+* `request.headers` → HTTP headers
+* `request.method` → HTTP method used
+
+
+---
+# session-9-authN-authZ
+
+**Difference between authentication and authorization**
+Authentication verifies who a user is (identity check), while authorization determines what an authenticated user is allowed to do (permissions/access control).
+
+**What are HTTP cookies? How do they work and what are their main use cases?**
+HTTP cookies are small pieces of data stored by the browser and sent with requests to the server. They work by the server sending `Set-Cookie` headers, which the browser stores and includes in subsequent requests. Main use cases: session tracking, user preferences, authentication tokens.
+
+**What are the limitations of cookies**
+
+* Limited size (~4KB per cookie)
+* Sent with every HTTP request (can increase bandwidth)
+* Security risks: susceptible to XSS, CSRF if not configured properly
+* Domain and path restrictions can complicate usage
+
+**What is JWT and how does it work?**
+JWT (JSON Web Token) is a compact, self-contained token that encodes claims in JSON, signed using a secret or public/private key. It works by the server issuing a token after authentication; clients include the token in requests for stateless verification without server-side session storage.
+
+**What are the advantages and disadvantages of using JWT compared to traditional session-based authentication?**
+Advantages:
+
+* Stateless: no server-side session storage required
+* Portable across domains and microservices
+* Can include custom claims
+
+Disadvantages:
+
+* Token revocation is harder
+* Token size larger than session ID
+* Sensitive info must be encrypted if included
+
+**How do you invalidate or blacklist JWT tokens?**
+
+* Maintain a server-side blacklist of token IDs until expiration
+* Issue short-lived access tokens and use refresh tokens
+* Change the signing key to invalidate all existing tokens
+
+**What is password hashing and why is it important?**
+Password hashing converts a plaintext password into a fixed-length, irreversible string using algorithms like bcrypt or Argon2. It is important to protect passwords in case of database breaches and prevent storing plaintext passwords.
+
+**What is the access / refresh token pattern**
+
+* **Access token**: short-lived token for accessing protected resources
+* **Refresh token**: long-lived token used to obtain new access tokens without re-authentication
+* Pattern improves security and reduces the need to store long-lived tokens on clients
+
+**What is the Oauth2 flow**
+OAuth2 flow allows third-party apps to access resources on behalf of users without sharing passwords. Common flows:
+
+* **Authorization Code**: app gets a code via user authorization, then exchanges it for tokens
+* **Implicit**: token returned directly in URL fragment (mostly deprecated)
+* **Resource Owner Password Credentials**: user provides credentials to app (legacy, less secure)
+* **Client Credentials**: app accesses its own resources, no user involved
+
 
