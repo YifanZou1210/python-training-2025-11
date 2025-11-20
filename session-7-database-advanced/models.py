@@ -1,5 +1,5 @@
 # ORM - Object relation Mapping
-from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey, Text, Date
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey, Text, Date, create_engine 
 from sqlalchemy.orm import DeclarativeBase, relationship
 from datetime import datetime
 
@@ -40,7 +40,7 @@ class CustomerProfile(Base):
         return f"<CustomerProfile(customer_id={self.customer_id}, phone='{self.phone}')>"
 
 
-# ========== Model 3: Product ==========
+# Model 3: Product
 class Product(Base):
     __tablename__ = 'products'
     
@@ -56,7 +56,7 @@ class Product(Base):
         return f"<Product(id={self.id}, name='{self.name}', price=${self.price}, stock={self.stock})>"
 
 
-# ========== Model 4: Order (1-to-many with Customer) ==========
+# Model 4: Order (1-to-many with Customer) 
 class Order(Base):
     __tablename__ = 'orders'
     
@@ -75,7 +75,7 @@ class Order(Base):
         return f"<Order(id={self.id}, customer_id={self.customer_id}, total=${self.total_amount}, status='{self.status}')>"
 
 
-# ========== Model 5: OrderItem (Many-to-many junction) ==========
+# Model 5: OrderItem (Many-to-many junction) 
 class OrderItem(Base):
     __tablename__ = 'order_items'
     

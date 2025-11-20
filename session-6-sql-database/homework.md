@@ -86,11 +86,13 @@ Design a relational database schema that supports all the functionality of the L
 | membership_id | INTEGER | NOT NULL, FOREIGN KEY → memberships(id) | Membership type ID |
 | created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Creation time |
 
+这里members.id是pk，members.membership_id是members table的fk-> membership.id，表示一个member属于一种membership
+- fk所在的表是引用别人，这张表是子表，它的某一列必须指向另一张表的主键，依赖他表才能成立
+- 被fk指向的表是parent table， 被其他表依赖，它的主键被其他表的外键引用
 #### 5. memberships
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
 | id | INTEGER | PRIMARY KEY, AUTO_INCREMENT | Membership ID |
-| member_id | INTEGER | NOT NULL, UNIQUE, FOREIGN KEY → members(id) | Member ID |
 | membership_type | VARCHAR(20) | NOT NULL | 'regular' or 'premium' |
 | borrow_limit | INTEGER | NOT NULL | Maximum items that can be borrowed |
 | expiry_date | DATE | NULL | Expiry date (NULL for regular, required for premium) |

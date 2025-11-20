@@ -445,3 +445,6 @@ What is Sharding? How does it differ from Partitioning?
 
 Partitioning splits data inside one database instance. Sharding splits data across multiple servers, each holding part of the dataset. Sharding is basically distributed partitioning and helps scale out when one machine can’t handle the load.
 
+---
+# session-8-http-flask
+
