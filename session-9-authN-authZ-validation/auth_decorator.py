@@ -1,5 +1,5 @@
-from flask import request
-import jwt
+from flask import request # type:ignore[import]
+import jwt # type:ignore
 from config import SECRET_JWT_KEY
 from functools import wraps
 
