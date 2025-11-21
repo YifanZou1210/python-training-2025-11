@@ -3,7 +3,7 @@ Order API Service
 RESTful endpoints for Order operations
 """
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request # type: ignore[import]
 from models import db, Order, Customer
 from datetime import datetime
 

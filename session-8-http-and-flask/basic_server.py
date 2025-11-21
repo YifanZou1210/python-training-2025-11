@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request # type: ignore[import]
 from models import db, Product
 
 app = Flask(__name__)

@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, jsonify, request
+from flask import Flask, Blueprint, jsonify, request # type: ignore[import]
 from models import db, Product
 
 products_bp = Blueprint('products', __name__, url_prefix='/products')

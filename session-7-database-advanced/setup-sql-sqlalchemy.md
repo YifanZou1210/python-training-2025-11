@@ -1,4 +1,4 @@
-# Using Pip
+-# Using Pip
 
 ## setup virtual enviroment and package installation using Pip (Legacy)
 ```bash

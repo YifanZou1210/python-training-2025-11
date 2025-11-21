@@ -1,9 +1,7 @@
 from engine import engine
 from models import Customer, CustomerProfile, Product, Order, OrderItem
-from sqlalchemy.orm import Session
-from sqlalchemy import select, func
-
-
+from sqlalchemy.orm import Session # type: ignore[import]
+from sqlalchemy import select, func # type: ignore[import]
 
 def create_customer_with_profile():
     with Session(engine) as session:
