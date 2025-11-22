@@ -522,6 +522,19 @@ HTTP cookies are small pieces of data stored by the browser and sent with reques
 **What is JWT and how does it work?**
 JWT (JSON Web Token) is a compact, self-contained token that encodes claims in JSON, signed using a secret or public/private key. It works by the server issuing a token after authentication; clients include the token in requests for stateless verification without server-side session storage.
 
+jwt是一种 无状态的令牌格式，用于 用户认证 与 授权。服务端不保存 session，所有信息都编码在 token 内，由客户端携带。
+组成： header+payload+signature 
+工作流程： 
+- 用户登录并输入正确凭证。
+- 服务端验证密码 → 生成 JWT（含用户 ID、角色等）。
+- 客户端保存 token（通常在 localStorage 或 HTTP-only Cookie）。
+- 客户端后续请求在 Authorization: Bearer <token> 中发送 JWT。
+- 服务端收到请求：
+- 验证签名
+- 检查过期时间
+- 解出用户角色/权限
+- 如果验证成功 → 放行，否则返回 401。
+
 **What are the advantages and disadvantages of using JWT compared to traditional session-based authentication?**
 Advantages:
 
@@ -557,5 +570,59 @@ OAuth2 flow allows third-party apps to access resources on behalf of users witho
 * **Implicit**: token returned directly in URL fragment (mostly deprecated)
 * **Resource Owner Password Credentials**: user provides credentials to app (legacy, less secure)
 * **Client Credentials**: app accesses its own resources, no user involved
+
+---
+
+# session-10-fast api 
+1. **Explain the difference between def and async def in FastAPI route handlers. When should you use each?**
+
+   * `def` defines a synchronous function; it blocks the event loop while executing.
+   * `async def` defines an asynchronous coroutine; allows concurrent request handling when awaiting I/O.
+   * **Use `async def`** for I/O-bound operations (DB queries, HTTP calls); use `def` for CPU-bound or synchronous code.
+
+2. **What is dependency injection in FastAPI and how does it work behind the scene?**
+
+   * Dependencies are functions that provide values or setup/cleanup for route handlers.
+   * Declared using `Depends()`.
+   * **Behind the scenes:** FastAPI builds a dependency graph per request, resolves it recursively, and injects returned values into handler parameters.
+
+3. **How does FastAPI achieve automatic API documentation?**
+
+   * Generates OpenAPI schema from route definitions, type hints, and Pydantic models.
+   * Exposes Swagger UI (`/docs`) and ReDoc (`/redoc`) automatically.
+   * Type hints + Pydantic models allow FastAPI to infer request/response structure and validation for docs.
+
+4. **Explain the difference between Path, Query, Header, Body, and Cookie parameters in FastAPI.**
+
+   * `Path`: URL path variables, required (`/items/{id}`).
+   * `Query`: query string parameters, optional by default (`?q=test`).
+   * `Header`: HTTP headers (`X-Token`).
+   * `Body`: request body, usually JSON; often Pydantic models.
+   * `Cookie`: HTTP cookies.
+   * FastAPI uses parameter type and `Path()`, `Query()`, etc., to extract values from requests.
+
+5. **What is the purpose of Pydantic models in FastAPI? How do they differ from SQLAlchemy/SQLModel database models?**
+
+   * Pydantic: validate and serialize data, parse request/response JSON; not tied to DB.
+   * SQLAlchemy/SQLModel: define database tables, ORM mapping, handle persistence.
+   * Pydantic focuses on input/output structure; SQLAlchemy focuses on storage.
+
+6. **Explain how FastAPI's dependency caching works within a single request. Why is this important?**
+
+   * Dependencies are cached once per request; repeated `Depends()` calls with the same function return the same object.
+   * Ensures efficiency and consistency, e.g., DB session reused across multiple parameters/routes in a request.
+
+7. **How does FastAPI handle request validation and what happens when validation fails? How can you customize error responses?**
+
+   * Validates requests automatically via Pydantic and type hints.
+   * On failure, returns `422 Unprocessable Entity` with details.
+   * Customize errors using `@app.exception_handler(RequestValidationError)`.
+
+8. **Explain the difference between using Annotated[Session, Depends(get_db)] vs Session = Depends(get_db) for type hints. Which is recommended and why?**
+
+   * `Annotated[Session, Depends(get_db)]`: separates type hint from dependency injection; preferred for clarity and type checking.
+   * `Session = Depends(get_db)`: mixes type hint and dependency.
+   * **Recommendation:** use `Annotated` for clearer typing and better IDE/type-checker support.
+
 
 
