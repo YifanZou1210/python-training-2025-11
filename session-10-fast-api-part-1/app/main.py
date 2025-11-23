@@ -4,7 +4,7 @@ from app.schemas import Notebase
 from app.routers.notes import router as notes_router
 
 app = FastAPI(
-    title="fast api project"
+    title="fast api pmoroject"
 )
 
 app.include_router(notes_router)
