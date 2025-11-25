@@ -624,5 +624,90 @@ OAuth2 flow allows third-party apps to access resources on behalf of users witho
    * `Session = Depends(get_db)`: mixes type hint and dependency.
    * **Recommendation:** use `Annotated` for clearer typing and better IDE/type-checker support.
 
+---
+# session-11-fast api
+
+1. **What's the difference between using `requests` and `httpx` for making HTTP calls in FastAPI, and why is `httpx` preferred in async contexts?**
+   `requests` is a synchronous HTTP client; every request blocks the thread until the response arrives. `httpx` supports both synchronous and asynchronous requests, allowing `async`/`await` syntax. In async FastAPI routes, `httpx` is preferred because it allows non-blocking calls, letting other coroutines run concurrently and improving performance under high I/O workloads.
+
+---
+
+2. **What are the key differences in the database URL connection string when migrating from sync SQLAlchemy to async SQLAlchemy, and what driver changes are required for PostgreSQL?**
+   For async SQLAlchemy with PostgreSQL, you need an async driver like `asyncpg`. The URL changes from:
+
+```
+postgresql://user:pass@host:port/dbname
+```
+
+to
+
+```
+postgresql+asyncpg://user:pass@host:port/dbname
+```
+
+The `+asyncpg` tells SQLAlchemy to use the async driver, enabling `async` sessions with `AsyncSession`.
+
+---
+
+3. **What is ASGI (Asynchronous Server Gateway Interface) and how does it differ from WSGI?**
+   WSGI is a synchronous interface for Python web servers and apps, suitable for blocking code. ASGI is asynchronous, supporting `async`/`await`, WebSockets, and long-lived connections. ASGI allows concurrent handling of multiple requests without blocking threads, which is essential for modern async frameworks like FastAPI.
+
+---
+
+4. **How is FastAPI different from Flask?**
+
+* FastAPI is **async-first** and uses Python type hints for automatic request validation, serialization, and OpenAPI generation.
+* Flask is synchronous, minimalistic, and requires manual validation and documentation.
+* FastAPI has built-in support for modern features like async routes, dependency injection, and automatic docs via Swagger/OpenAPI, making it better suited for high-performance APIs.
+
+---
+
+5. **Explain the difference between `response_model`, `response_model_exclude`, and `response_model_include` in FastAPI route decorators. When would you use each?**
+
+* `response_model`: defines the Pydantic model used to serialize the response; validates and formats outgoing data.
+* `response_model_include`: specifies which fields to include from the response model; useful for partial responses.
+* `response_model_exclude`: specifies fields to exclude from the response; useful for hiding sensitive data like passwords.
+
+Example use:
+
+* `response_model` → standard API output.
+* `response_model_include` → only return `id` and `name`.
+* `response_model_exclude` → exclude `password` or `secret_token`.
+
+---
+
+6. **How do you implement JWT authentication in FastAPI**
+
+* Use `PyJWT` or `python-jose` to encode/decode tokens.
+* Create a login route that generates a JWT with user info and expiry.
+* Define a dependency that extracts and verifies the token from `Authorization` header.
+* Use the dependency in protected routes to access user information.
+* Example:
+
+```python
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt, JWTError
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+        return {"id": user_id}
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+```
+
+---
+
+7. **How does FastAPI handle synchronous functions differently?**
+
+* FastAPI can run synchronous functions in a **thread pool** using `starlette.concurrency.run_in_threadpool`.
+* Sync functions **block the thread** they're running in, but the event loop continues handling other async tasks in other threads.
+* Async functions are preferred for I/O-bound operations, but sync functions still work for CPU-bound tasks or libraries without async support.
 
 
