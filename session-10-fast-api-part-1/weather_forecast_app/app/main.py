@@ -2,8 +2,8 @@
 
 from fastapi import FastAPI
 from sqlmodel import SQLModel
-from app.database import engine
-from app.routers.tasks import router as tasks_router, user_router
+from .database import engine
+from .routers.tasks import router as tasks_router, user_router
 
 
 # Create all database tables

@@ -1,8 +1,8 @@
 # app/data_init.py
 
 from sqlmodel import SQLModel, Session, select
-from app.database import engine
-from app.models import User, Task
+from .database import engine
+from .models import User, Task
 
 
 def create_tables():
@@ -10,6 +10,7 @@ def create_tables():
     Create all database tables
     This function should be called before inserting any data
     """
+
     SQLModel.metadata.create_all(engine)
 
 

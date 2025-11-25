@@ -1,12 +1,12 @@
 # app/dependency.py
 
-from fastapi import Depends
+from fastapi import Depends, FastAPI
 from sqlmodel import Session
-from app.database import get_session
+from .database import get_session
 from typing import Annotated
 import httpx
 
-
+                                         
 #  Database Dependency 
 
 # Type alias for database session dependency
