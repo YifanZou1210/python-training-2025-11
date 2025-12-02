@@ -628,6 +628,7 @@ OAuth2 flow allows third-party apps to access resources on behalf of users witho
 # session-11-fast api
 
 1. **What's the difference between using `requests` and `httpx` for making HTTP calls in FastAPI, and why is `httpx` preferred in async contexts?**
+
    `requests` is a synchronous HTTP client; every request blocks the thread until the response arrives. `httpx` supports both synchronous and asynchronous requests, allowing `async`/`await` syntax. In async FastAPI routes, `httpx` is preferred because it allows non-blocking calls, letting other coroutines run concurrently and improving performance under high I/O workloads.
 
 ---
@@ -678,7 +679,7 @@ Example use:
 
 6. **How do you implement JWT authentication in FastAPI**
 
-* Use `PyJWT` or `python-jose` to encode/decode tokens.
+* Use `JWT`  to encode/decode tokens.
 * Create a login route that generates a JWT with user info and expiry.
 * Define a dependency that extracts and verifies the token from `Authorization` header.
 * Use the dependency in protected routes to access user information.
@@ -701,6 +702,16 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 ```
+**General Procedure to Implement JWT Authentication in FastAPI:**
+
+1. **Create a login endpoint** that accepts user credentials, like password or username.
+2. **Verify credentials** against your database or user store, check the user exists in db or not, compare hash password.
+3. **Generate a JWT token** with user info and expiration using a secret key and algorithm hs256.
+4. **Return the token** to the client.
+5. **Create a dependency** (e.g., `get_current_user`) that reads and validates the token from the `Authorization` header.
+6. **Apply the dependency** to protected routes to enforce authentication.
+7. **Optionally handle token expiration and refresh logic**.
+
 
 ---
 
@@ -709,5 +720,68 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 * FastAPI can run synchronous functions in a **thread pool** using `starlette.concurrency.run_in_threadpool`.
 * Sync functions **block the thread** they're running in, but the event loop continues handling other async tasks in other threads.
 * Async functions are preferred for I/O-bound operations, but sync functions still work for CPU-bound tasks or libraries without async support.
+
+---
+# session-12-django
+
+**What is Django's MTV pattern?**
+
+Django follows the MTV (Model-Template-View) architecture:
+
+* **Model**: Defines the data structure and database schema.
+* **Template**: Handles presentation logic, rendering HTML to the user.
+* **View**: Contains the business logic, handles requests, fetches data from models, and renders templates.
+
+---
+
+**What's the difference between blank=True and null=True?**
+
+* **null=True**: Database-related; allows storing `NULL` in the database.
+* **blank=True**: Form/validation-related; allows form fields to be left empty.
+  Typically, for string-based fields, use `blank=True, null=False`.
+
+---
+
+**What's the difference between auto_now and auto_now_add?**
+
+* **auto_now_add=True**: Sets the field to the current timestamp when the object is first created.
+* **auto_now=True**: Updates the field to the current timestamp every time the object is saved.
+
+---
+
+**What are Django migrations and why are they important?**
+
+* Migrations are Django’s way of propagating model changes to the database schema.
+* They allow version control of the database structure, easy schema updates, and consistency across environments.
+
+---
+
+**What is the N+1 query problem? How to avoid it in Django?**
+
+* **N+1 problem**: Querying a list of objects (N) and then accessing a related field causes an additional query per object, leading to N+1 queries.
+* **Solution in Django**: Use `select_related` for foreign key/one-to-one relations or `prefetch_related` for many-to-many/one-to-many relations to fetch related objects efficiently.
+
+---
+
+**What is the Meta class in Django models?**
+
+* `Meta` is an inner class in a Django model used to define model metadata, such as:
+
+    * Database table name (`db_table`)
+    * Ordering of results (`ordering`)
+    * Verbose name (`verbose_name`)
+    * Unique constraints (`unique_together`)
+
+---
+
+**What's the purpose of str() method in models?**
+
+* The `__str__` method defines the human-readable string representation of a model instance, used in admin, shell, and templates for easier identification.
+
+
+---
+
+
+
 
 
