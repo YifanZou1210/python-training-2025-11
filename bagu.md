@@ -329,11 +329,13 @@ class Animal(ABC):
 
 What's difference between View, Materialized View, and Table
 
-* **表（Table）**：真实存储数据。
-* **视图（View）**：不存数据，实时查询底层 SQL。
-* **物化视图（Materialized View）**：存储查询结果，需要刷新。
+* **表（Table）**：真实存储数据，增删查改都是直接修改表中数据
+* **视图（View）**：不存数据，只存储sql定义， 查询视图时会实时查询执行他背后的sql
+* **物化视图（Materialized View）**：存储sql查询结果，类似缓存表，查询速度快，因为结果是premake的， 但是数据可能过时，需要刷新，常用于分析、报表、复杂聚类查询
 
-A table actually stores your data; it's the real thing. A view is just a saved query—like a lens that shows data from tables but doesn’t store anything itself. A materialized view is basically a precomputed view where the results are stored like a snapshot, so reads are faster but you need to refresh it. You’d use tables for your real data, views to simplify queries, and materialized views for heavy analytical reads where speed matters.
+- Table is physically stored data on disk, which implementation data changes through insertion, deletion, addition, etc, the primary storage structure in a database
+- View does not store data, only store sql definition, each time we query a view, the database will rerun sql on underlying tables
+- Materialized View store actual query res physically, like a cached table, it query very fast cuz res are precomputed, but data can be stale, needs to refresh frequently
 
 ### 2. 什么是 ORM？为什么需要 ORM？
 
@@ -428,6 +430,7 @@ Vertical scaling means giving a single machine more power. Horizontal scaling me
 * Multi-doc ACID transactions supported since 4.0
 * Sharded clusters remain eventually consistent
 * Transactions are expensive; use only when needed
+
 MongoDB is fully ACID for single-document updates. Since version 4.0 it also supports multi-document transactions, making it behave much more like a relational DB when needed. But multi-document transactions cost performance, so MongoDB encourages embedding related data in one document.
 
 
@@ -473,7 +476,7 @@ Idempotency means that performing the same HTTP request multiple times has the s
 
 **Explain the difference between HTTP and HTTPS**
 
-HTTP is unsecured and sends data in plaintext; HTTPS uses SSL/TLS to encrypt communication, ensuring confidentiality and integrity.
+HTTP is unsecured and sends data in plaintext; HTTPS uses SSL/TLS to encrypt communication, ensuring safety and integrity.
 
 **Design a RESTful API for a blogging platform**
 
@@ -679,7 +682,7 @@ Example use:
 
 6. **How do you implement JWT authentication in FastAPI**
 
-* Use `JWT`  to encode/decode tokens.
+* Use `JWT`  to encode/dec ode tokens.
 * Create a login route that generates a JWT with user info and expiry.
 * Define a dependency that extracts and verifies the token from `Authorization` header.
 * Use the dependency in protected routes to access user information.
@@ -780,6 +783,755 @@ Django follows the MTV (Model-Template-View) architecture:
 
 
 ---
+
+# Session14 - advanced web development 
+
+
+ 1. Explain the WebSocket protocol and how it differs from HTTP polling and long polling
+
+**Answer:**
+
+1. **WebSocket 协议**
+
+    * 建立一次 **持久化的全双工连接**
+    * 客户端与服务器都可以主动发送消息
+    * 使用 HTTP 握手升级协议 → 之后不再需要重复建立连接
+    * 低延迟、高实时性（如聊天、协作编辑、行情推送）
+
+2. **与 Polling、Long Polling 的区别**
+
+    * **HTTP Polling**
+
+        * 客户端定期发请求(如每 1s)
+        * 非实时，高网络开销
+    * **HTTP Long Polling**
+
+        * 客户端发请求 → 服务端保持连接直到有数据
+        * 半实时，但仍是 *request-response*
+    * **WebSocket**
+
+        * 一次连接，多次通信
+        * 真正的双向实时推送
+        * 网络开销最小、延迟最低
+
+---
+
+2. What caching strategy would you use for frequently accessed but slowly changing data
+
+**Answer:**
+
+1. **Cache-aside (Lazy Loading)** 最常用
+
+    * 读取：先查缓存，不在再查数据库 → 放入缓存
+    * 更新：先更新数据库，再删除缓存
+    * 适用于：**读多、写少、数据变化慢**
+    * 示例：商品详情页、配置、排行榜
+
+2. 可搭配：
+
+    * **TTL（过期时间）**
+    * **定期 refresh 预热**
+    * **Redis + JSON serialization**
+
+---
+
+ 3. Explain the difference between cache-aside, write-through, and write-behind caching patterns
+
+**Answer:**
+
+1. **Cache-aside（旁路缓存）**
+
+    * 读时加载，写时更新 DB + 删除缓存
+    * 优点：最灵活
+    * 缺点：写不一致风险（已被业界成熟方案避免）
+
+2. **Write-through（写穿）**
+
+    * 写 → 同时写缓存 & DB
+    * 数据绝对一致
+    * 缺点：写性能慢
+
+3. **Write-behind（写回）**
+
+    * 写 → 写缓存；DB 在后台异步刷新
+    * 写性能最快
+    * 缺点：DB 与缓存**强一致性无法保证**
+
+---
+
+ 4. Describe the differences between RabbitMQ, Kafka, and SQS
+
+**Answer:**
+
+1. **RabbitMQ**
+
+    * 消息队列（MQ）
+    * 强调**可靠投递、复杂路由（exchange）、确认机制**
+    * 适用于：短消息、任务队列、同步解耦
+
+2. **Kafka**
+
+    * 分布式流处理平台
+    * 强调**高吞吐、可持久化日志存储、分区**
+    * 适用于：日志、事件流、真实时间大数据处理
+
+3. **AWS SQS**
+
+    * 托管队列服务
+    * 简单、无需管理 Broker
+    * 适用于：云原生微服务解耦，低维护成本
+
+---
+
+ 5. What are message queues and why are they important in distributed systems?
+
+**Answer:**
+
+1. **定义**
+
+    * 异步通信机制，通过队列传递消息，不要求双方同时在线
+
+2. **重要性**
+
+    * **解耦**：服务独立
+    * **削峰填谷**：缓冲流量
+    * **异步任务**：提高响应速度
+    * **重试机制**：提高可靠性
+    * **容错性**：服务宕机不会丢消息（视 MQ 具体配置）
+
+---
+
+ 6. How would you implement a retry mechanism with exponential backoff for failed message processing?
+
+**Answer:**
+
+1. **步骤**
+
+    * 捕获处理失败
+    * 重试次数限制（如 3 次）
+    * 使用 **2^n × baseDelay** 进行等待
+    * 重试仍失败 → 进入 DLQ
+
+2. **伪代码**
+
+```python
+delay = base
+for attempt in range(max_retries):
+    try:
+        process(msg)
+        break
+    except:
+        sleep(delay)
+        delay *= 2
+else:
+    send_to_dlq(msg)
+```
+
+---
+
+ 7. Explain the concept of dead letter queues and when you'd use them
+
+**Answer:**
+
+1. **定义**
+
+    * Dead Letter Queue (DLQ) 是存放 **处理失败消息** 的特殊队列
+
+2. **用途**
+
+    * 重试超过次数
+    * 消息格式错误
+    * 无法被消费者处理
+    * 需要人工检查与修复
+
+3. **重要性**
+
+    * 确保系统不因为坏消息而卡死
+    * 提供可审计性
+    * 确保主队列性能不受损
+
+---
+
+ 8. How does FastAPI handle synchronous functions differently?
+
+**Answer:**
+
+1. **Sync（普通函数）**
+
+    * FastAPI 会在 **ThreadPoolExecutor** 中运行
+    * 适用于：CPU-bound、阻塞 IO 的代码
+    * 每个请求占用一个线程
+
+2. **Async（async def）**
+
+    * 运行在 event loop
+    * 适用于：非阻塞 IO、HTTP 调用
+    * 并发更高，资源消耗更低
+
+3. **FastAPI 区别处理**
+
+    * 根据函数类型自动选择执行策略
+    * 避免阻塞 event loop
+
+---
+
+## English Version
+
+
+1. **Explain the WebSocket protocol and how it differs from HTTP polling and long polling**
+
+**Answer:**
+WebSocket is a full-duplex communication protocol built on top of TCP. After an initial HTTP handshake, the connection upgrades to WebSocket and stays open, allowing both client and server to push messages at any time.
+
+**Key differences:**
+
+1. **HTTP Polling**
+
+    * Client repeatedly sends requests (e.g., every 1s).
+    * Highly inefficient; many requests return no new data.
+2. **Long Polling**
+
+    * Client sends a request and the server holds it until new data is available.
+    * Better than polling, but still reopens HTTP connections repeatedly.
+3. **WebSocket**
+
+    * One persistent connection.
+    * No repeated HTTP overhead.
+    * Real-time, bidirectional updates.
+
+---
+
+2. **What caching strategy would you use for frequently accessed but slowly changing data?**
+
+**Answer:**
+Use a **cache-aside strategy with TTL (time-to-live)**.
+
+**Why this fits:**
+
+* The data is read often → caching avoids unnecessary database hits.
+* The data changes infrequently → TTL ensures cache eventually refreshes.
+* Cache-aside gives full control over when to reload.
+
+Typical TTL: **5–30 minutes**, depending on consistency requirements.
+
+---
+
+3. **Explain the difference between cache-aside, write-through, and write-behind patterns**
+
+**Answer:**
+
+1. **Cache-Aside (Lazy Loading)**
+
+    * Application reads from cache first.
+    * If missing → fetch from DB → store in cache.
+    * Writes go to DB first, cache is updated or invalidated.
+    * Pros: simple, flexible.
+    * Cons: first read is slow (“cache miss”).
+
+2. **Write-Through**
+
+    * All writes go to cache first; cache immediately writes to DB.
+    * Read always comes from cache.
+    * Pros: data in cache is always consistent.
+    * Cons: writes become slower.
+
+3. **Write-Behind (Write-Back)**
+
+    * Application writes to cache only; cache asynchronously flushes changes to DB.
+    * Pros: very fast writes.
+    * Cons: risk of data loss if cache dies before flushing.
+
+---
+
+4. **Describe RabbitMQ, Kafka, and SQS in terms of use cases and guarantees**
+
+**Answer:**
+**RabbitMQ**
+
+* **Type:** Message broker, queue-based
+* **Use cases:** Task queues, request/response, events requiring ordering
+* **Guarantee:** At-least-once delivery, routing flexibility
+
+**Kafka**
+
+* **Type:** Distributed log streaming platform
+* **Use cases:** High-throughput event streaming, logs, analytics pipelines
+* **Guarantee:** Durable log with partition ordering; consumer groups
+
+**SQS (AWS)**
+
+* **Type:** Fully managed queue service
+* **Use cases:** Simple decoupling between microservices
+* **Guarantee:** At-least-once; FIFO option available
+
+---
+
+5. **What are message queues and why are they important in distributed systems?**
+
+**Answer:**
+Message queues decouple producers and consumers by allowing messages to be stored temporarily until processed.
+
+**Importance:**
+
+* Smooth out traffic spikes
+* Prevent service overload
+* Improve fault tolerance
+* Enable asynchronous workflows
+* Increase scalability and resilience
+
+Examples: task processing, event notifications, job scheduling.
+
+---
+
+6. **How would you implement a retry mechanism with exponential backoff for failed message processing?**
+
+**Answer:**
+Use a retry loop with a delay that grows exponentially after each failure.
+
+**Example logic:**
+
+1. Try to process the message.
+2. On failure → wait `base_delay * (2^attempt)` seconds.
+3. Retry up to a maximum attempt count.
+4. If still failing → send to a Dead Letter Queue.
+
+**Example pattern:**
+
+* 1s → 2s → 4s → 8s → …
+* With jitter to avoid retry storms.
+
+---
+
+7. **Explain dead letter queues and when you'd use them**
+
+**Answer:**
+A Dead Letter Queue (DLQ) holds messages that could not be processed successfully after multiple retries.
+
+**Use cases:**
+
+* Messages with malformed data
+* Infinite retry prevention
+* Operational debugging
+* Monitoring abnormal behavior
+* Ensuring the main queue stays clean
+
+DLQs improve reliability and prevent system clogging.
+
+---
+
+8. **How does FastAPI handle synchronous functions differently?**
+
+**Answer:**
+FastAPI automatically executes synchronous functions (`def`) in a threadpool managed by Starlette.
+
+**Details:**
+
+* Synchronous functions run in a worker thread → do not block the event loop
+* Asynchronous functions (`async def`) run directly on the event loop
+* FastAPI chooses the correct execution model based on the function signature
+
+This enables CPU-bound or blocking operations to run without affecting overall concurrency.
+
+---
+
+# Session-15-graphQL
+
+**What is GraphQL and how does it differ from REST? What problems does it solve?**
+
+**English:**
+
+1. GraphQL is a query language and runtime that lets clients request exactly the data they need.
+2. Unlike REST—which exposes multiple endpoints—GraphQL exposes a single endpoint where clients specify the shape of the response.
+3. It solves problems such as over-fetching (receiving more data than needed) and under-fetching (requiring multiple requests to gather data).
+4. It is especially useful for complex frontends and mobile apps needing efficient data loading.
+
+**Chinese:**
+
+1. GraphQL 是一种查询语言与运行时，允许客户端“精确地”请求所需要的数据结构。
+2. 与需要多个 endpoint 的 REST 不同，GraphQL 只提供一个 endpoint，客户端自己定义返回数据的结构。
+3. 它解决了 REST 常见的 **数据过度获取**（拿了太多）和 **数据获取不足**（需要多次请求）的问题。
+4. 在前端复杂或移动端需要高效节流数据量的场景下特别有价值。
+
+---
+
+**What is the N+1 query problem in GraphQL and how can it be resolved?**
+
+**English:**
+
+1. N+1 happens when a resolver fetches data for each item individually, causing one query for the list + N queries for each item.
+2. Example: fetching a list of posts, then fetching the author for each post.
+3. It is resolved using batching and caching techniques, most commonly via **DataLoader**, which groups many small queries into one.
+
+**Chinese：**
+
+1. N+1 问题指：GraphQL resolver 对列表中的每个元素分别查询，例如先查一次 posts 列表，再对列表中的每个 post 查一次 author。
+2. 导致总共 1 + N 次查询，性能非常差。
+3. 解决方式是 **批处理（batching）与缓存（caching）**，最常用工具是 **DataLoader**，它会把多个独立查询合并成“一次查询”。
+
+---
+
+**Describe the difference between nullable and non-nullable fields in GraphQL. How do you denote them in the schema?**
+
+**English:**
+
+1. Nullable fields can return null; non-nullable fields must always return a value.
+2. Non-nullable types are marked with an exclamation mark `!`.
+3. Example:
+
+    * `name: String` → may return null
+    * `name: String!` → guaranteed non-null
+
+**Chinese：**
+
+1. 可空字段可以返回 null；不可空字段必须返回实际值。
+2. 不可空字段在 schema 中用 `!` 标记。
+3. 示例：
+
+    * `name: String` → 可以返回 null
+    * `name: String!` → 一定不能是 null
+
+---
+
+**What is the DataLoader pattern and why is it important for GraphQL performance?**
+
+**English:**
+
+1. DataLoader batches multiple similar requests into a single query and caches results during a request cycle.
+2. It prevents N+1 queries by grouping multiple loads for the same resource.
+3. It improves both DB efficiency and backend throughput.
+
+**Chinese：**
+
+1. DataLoader 会将多个相似的数据请求（例如根据多个 id 查多个用户）合并成“一次批量查询”，并在一次请求生命周期中做缓存。
+2. 它能避免 N+1 查询，把大量小查询变成少量批量查询。
+3. 作用是显著提升数据库效率和后端吞吐量。
+
+---
+
+**What are GraphQL fragments and when would you use them?**
+
+**English:**
+
+1. Fragments allow reusing shared field selections across multiple queries.
+2. They avoid repeated boilerplate and ensure consistency.
+3. Example use case: multiple components needing the same user fields.
+
+**Chinese：**
+
+1. Fragment 用于复用重复的字段选择，让多个 query 能共享同一段字段定义。
+2. 它减少重复代码并保持字段一致性。
+3. 典型场景：多个前端组件都需要 User 的部分共同字段。
+
+---
+
+**How would you implement pagination in a Python GraphQL API?**
+
+**English:**
+
+1. Two common patterns: **offset-based** and **cursor-based** pagination.
+2. Offset: pass offset/limit to the DB (simple but less scalable).
+3. Cursor: use stable encoded cursors (better for large or frequently updated data).
+4. In Python (Graphene or Strawberry):
+
+    * Define arguments (`first`, `after`)
+    * Query DB based on cursor
+    * Return edges + pageInfo
+
+**Chinese：**
+
+1. 分页有两种常见方式：**offset 分页**与 **cursor 分页**。
+2. Offset：通过 offset/limit 控制，简单但对大数据或频繁更新的表不稳定。
+3. Cursor：基于游标（稳定字段，例如 ID），更适合大规模数据分页。
+4. 在 Python GraphQL（Graphene / Strawberry）中：
+
+    * 定义分页参数（如 `first`, `after`）
+    * 根据 cursor 查询
+    * 返回 edges + pageInfo，符合 Relay 分页规范。
+
+---
+
+**How do you handle errors and exceptions in GraphQL resolvers?**
+
+**English:**
+
+1. GraphQL never throws raw server errors to the client; instead, it returns partial data + an `errors` array.
+2. In Python, wrap resolver logic in try/except and raise GraphQLError for user-friendly errors.
+3. This keeps the response structure predictable and prevents breaking the entire query when only one field fails.
+
+**Chinese：**
+
+1. GraphQL 的错误不会导致整个请求直接失败，而是返回部分数据并带上 `errors` 数组。
+2. 在 Python 实现中，可在 resolver 中使用 try/except，并抛出 GraphQLError 来返回可读错误。
+3. 好处是：一个字段失败不会导致整个 query 崩溃，增强 API 鲁棒性。
+
+
+---
+
+# Session-16-ci-cd-unit-test
+
+## 1. What’s the difference between unit tests, integration tests, and end-to-end tests? When would you use each?
+
+### **English**
+
+**Unit tests**
+
+* Test a single function/class in isolation.
+* Fast, small scope, no external systems.
+  **Use when:** verifying core logic correctness.
+
+**Integration tests**
+
+* Test how multiple components work together (e.g., service + DB layer).
+* Medium speed.
+  **Use when:** validating interfaces bw components.
+
+**End-to-end (E2E) tests**
+
+* Test the full system from user perspective, including network, DB, auth.
+* Slowest but highest confidence.
+  **Use when:** validating full real-world scenarios.
+
+### **中文**
+
+**单元测试**
+
+* 测试最小逻辑单元（函数/类），完全隔离外部依赖。
+* 快、覆盖逻辑细节。
+  **使用场景：** 核心算法、业务逻辑正确性。
+
+**集成测试**
+
+* 测试多个模块如何协同工作（例如：Service + Repository）。
+* 速度中等。
+  **使用场景：** 验证模块接口和数据流。
+
+**端到端测试**
+
+* 模拟用户行为，测试整个系统链路（网络、数据库、权限）。
+* 最慢但最真实。
+  **使用场景：** 回归测试、上线前验收。
+
+---
+
+## 2. Explain the purpose of mocking in unit tests. Difference between Mock, MagicMock, and patch.
+
+### **English**
+
+**Purpose of mocking**
+
+* Replace external dependencies (DB, API, file I/O) so unit tests run fast and deterministically.
+
+**Mock**
+
+* Basic mock object that tracks calls, arguments, return values.
+
+**MagicMock**
+
+* Extends Mock and adds “magic methods” (e.g., `__len__`, `__iter__`, `__getitem__`), useful for mocking objects that behave like collections.
+
+**patch**
+
+* Temporarily replaces an object in a module (`function`, `class`, `variable`) during a test.
+* Used when you want to mock at the correct import path.
+
+### **中文**
+
+**Mock 的目的**
+
+* 屏蔽外部依赖（数据库、HTTP、文件系统），让单测只关注逻辑本身并且执行更快、更稳定。
+
+**Mock**
+
+* 基础 mock 对象，可记录调用次数、参数、返回值。
+
+**MagicMock**
+
+* Mock 的增强版，支持各种“魔术方法”，适合 mock 列表/字典/迭代器等对象。
+
+**patch**
+
+* 动态替换模块中的对象，用来 mock 函数、类、变量。
+* 重点：必须 patch **代码实际 import 的路径**。
+
+---
+
+## 3. Explain test coverage. What's a good percentage?
+
+### **English**
+
+**Test coverage**
+
+* A metric showing the percentage of executed code during tests (lines, branches, functions).
+
+**Good coverage target:**
+
+* 80% is common industry baseline.
+* 100% is unnecessary—high coverage doesn’t guarantee quality.
+
+### **中文**
+
+**测试覆盖率**
+
+* 表示测试过程中被执行的代码占总代码的比例（行覆盖、分支覆盖、函数覆盖）。
+
+**比较合理的目标：**
+
+* 行业普遍标准：80%。
+* 不需要追求 100%，关键是测试质量而不是数字。
+
+---
+
+## 4. How do you test code involving databases without hitting real DBs?
+
+### **English**
+
+Strategies:
+
+1. **Mock the database layer** (replace queries with fakes).
+2. **Use an in-memory DB** (SQLite for lightweight tests).
+3. **Use test containers** (Dockerized Postgres/MySQL specifically for integration tests).
+4. **Repository pattern** to isolate DB logic for easier mocking.
+
+### **中文**
+
+测试数据库相关代码的策略：
+
+1. **Mock 数据访问层**（把数据库调用替换成假对象）。
+2. **使用内存数据库**（如 SQLite）加快测试。
+3. **使用 Testcontainers**（用 Docker 启动真实但独立的数据库进行集成测试）。
+4. **使用 Repository 抽象层**，便于隔离和 mock。
+
+---
+
+## 5. What’s test-driven development (TDD)?
+
+### **English**
+
+TDD cycle:
+
+1. **Write a failing test** (Red)
+2. **Write minimal code to make it pass** (Green)
+3. **Refactor** while keeping tests green
+
+Goal: clean design, high test coverage, clear requirements.
+
+### **中文**
+
+TDD 工作流程：
+
+1. **先写失败的测试**（红）
+2. **写最少代码让测试通过**（绿）
+3. **重构代码**，所有测试保持通过
+
+目标：更好的设计、天然高覆盖率、更清晰的需求。
+
+---
+
+## 6. Explain the typical stages in a CI/CD pipeline.
+
+### **English**
+
+Stages:
+
+1. **Source / Checkout** – pull code from repo
+2. **Build** – compile, package, install dependencies
+3. **Unit Tests** – fast logic validation
+4. **Integration Tests** – service + DB tests
+5. **Static analysis** – lint, type check, security scan
+6. **Artifact packaging** – build Docker image / wheel
+7. **Deploy** – to staging → production
+8. **Post-deploy tests** – smoke tests/health checks
+
+### **中文**
+
+CI/CD 流水线典型阶段：
+
+1. **源码拉取**
+2. **构建依赖/编译**
+3. **单元测试**
+4. **集成测试**
+5. **静态分析（lint、类型、安全扫描）**
+6. **制品打包（Docker 镜像、wheel 包）**
+7. **部署（测试环境 → 生产环境）**
+8. **部署后校验（健康检查、冒烟测试）**
+
+---
+
+## 7. What’s the purpose of environment variables & secrets management in CI/CD?
+
+### **English**
+
+Purpose:
+
+* Keep configuration out of code
+* Securely manage sensitive data (DB passwords, API keys)
+* Support environment-specific configs (dev/staging/prod)
+
+How to handle secrets:
+
+* Secrets Manager (AWS/GCP/Azure)
+* Vault
+* CI/CD encrypted variables
+* Kubernetes Secrets
+
+### **中文**
+
+目的：
+
+* 配置与代码分离
+* 安全管理敏感信息（数据库密码、API Key）
+* 区分不同环境的配置（开发/测试/生产）
+
+管理方式：
+
+* 云厂商 Secrets Manager
+* Vault
+* CI/CD 的加密变量
+* Kubernetes Secrets
+
+---
+
+## 8. Explain Scrum roles: Product Owner, Scrum Master, Development Team.
+
+### **English**
+
+**Product Owner**
+
+* Owns the product vision
+* Prioritizes backlog
+* Defines requirements and acceptance criteria
+
+**Scrum Master**
+
+* Facilitates meetings
+* Removes blockers
+* Ensures Scrum practices
+
+**Development Team**
+
+* Implements features
+* Self-organizing
+* Responsible for delivering increments
+
+### **中文**
+
+**产品负责人（PO）**
+
+* 负责产品愿景
+* 维护 backlog 优先级
+* 定义需求和验收标准
+
+**Scrum Master**
+
+* 主持会议
+* 移除团队阻碍
+* 保障 Scrum 流程正确执行
+
+**开发团队**
+
+* 实现功能
+* 自组织协作
+* 负责每个迭代的可交付成果
 
 
 
