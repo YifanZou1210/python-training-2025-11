@@ -16,12 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from blog.urls import router as blog_router
+from blog.urls import router  as blog_router 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(blog_router.urls)),
+    path('api/', include(blog_router.urls)), # map tp router of blog app, standard url = localhostxxx: /api/posts 
     path('api/login',TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path('api/refresh', TokenRefreshView.as_view(), name='token_refresh')
 ]

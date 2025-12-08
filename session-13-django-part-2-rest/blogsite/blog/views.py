@@ -15,7 +15,7 @@ from rest_framework.permissions import (
 from .permissions import HasCreatePostPermission
 
 # class PostViewSet(viewsets.ModelViewSet): # automatically generate all routes
-class PostViewSet(
+class PostViewSet( # 和self.actions类似，表示支持的api type, 比如listmodelmaxin支持get/items这种
     mixins.ListModelMixin, # add allowed method routes
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
@@ -32,8 +32,8 @@ class PostViewSet(
     - DELETE / posts/1 -> delete
     '''
     
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    queryset = Post.objects.all() # data source is .models.Post's objects  
+    serializer_class = PostSerializer  # used serializer
     permission_classes=[IsAuthenticated]
     
     def get_queryset(self):
@@ -50,7 +50,17 @@ class PostViewSet(
     def get_permissions(self):
         return super().get_permissions()
     
+
     def get_serializer_class(self):
+        # self.action表示当前ViewSet正在执行的动作，值是由drf自动根据请求匹配的标准动作名或者自定义动作名
+        """
+        get/items -> list 
+        get/items/1 -> retrieve
+        post /items - create 
+        put /items/id - update 
+        patch /items/id - partial_update 
+        delete /items/id - destroy 
+        """
         if self.action == 'list':
             return PostListSerializer
         elif self.action == 'retrieve':
@@ -59,7 +69,8 @@ class PostViewSet(
             return PostSerializer
         
     
-    # detail means -> /post/<id>
+    # detail means -> /post/<id> 自定义api的return type 
+    # detail = True 表示return的内容是针对单独id的， request api 应该是/items/1 
     @action(detail=True, methods=['POST'])    
     def publish(self, request, pk):
         print('pk', pk)
