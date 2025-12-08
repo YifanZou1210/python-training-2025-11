@@ -5,7 +5,7 @@ from sqlalchemy import select
 from models import User, Post
 
 query = QueryType()
-
+# 在schema.py中定义了session dependency所以可以用orm操作
 @query.field('hello')
 def hello(*_):
     return 'Hello world'

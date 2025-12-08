@@ -16,7 +16,7 @@ app_celery.conf.update(
 
 redis_client = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
-
+# mark as a task
 @app_celery.task(
     name='process_order',
     autoretry_for=(Exception, ),

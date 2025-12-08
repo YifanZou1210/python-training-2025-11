@@ -3,7 +3,7 @@ from engine import engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import Post, User
 from sqlalchemy import select
-
+# User.posts, Post.author是嵌套关联字段，必须定义在object type上
 user_type = ObjectType('User')
 post_type = ObjectType('Post')
 

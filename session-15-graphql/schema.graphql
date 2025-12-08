@@ -1,15 +1,15 @@
 type Query {
     hello: String
-    user(id: ID!): User
+    user(id: ID!): User # 这里的id是query定义中的argument, 传入的输入变量，如果查具体的userbyId,必须提供id（ID类型）前端传入UserById(id:'123')
     users: [User]!
-    post(id: ID!): Post
+    post(id: ID!): Post # ID是graphql内部type
     posts: [Post]!
 }
 
 type Mutation {
     createUser(name: String!, email: String!): User
 }
-
+# User.posts, Post.author会从type_resolver中取值，简单字段比如name, email, titile, content等会自动取值
 type User {
     id: ID!
     name: String!

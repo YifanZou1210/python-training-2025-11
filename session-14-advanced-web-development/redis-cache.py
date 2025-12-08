@@ -11,7 +11,7 @@ def cache(ttl=3600):
         def wrapper(*args, **kwargs):
             cache_key = f"{func.__name__}:{args}:{kwargs}"
             
-            cached = redis_client.get(cache_key)
+            cached = redis_client.get(cache_key)# check if cache_key exist 
             
             if cached:
                 print('[Cache HIT]')
@@ -20,7 +20,7 @@ def cache(ttl=3600):
             print('[Cache MISS]')
             result = func(*args, **kwargs)
             
-            redis_client.set(cache_key, json.dumps(result), ttl)
+            redis_client.set(cache_key, json.dumps(result), ttl) # 如果cache miss, call func(db) and sync cache 
             
             return result
             
