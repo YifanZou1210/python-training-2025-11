@@ -29,19 +29,19 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
+# 通过 django-admin startproject blogsite 默认生成的settings.py如下
 INSTALLED_APPS = [
-    'blog.apps.BlogConfig',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework_simplejwt',
+    'blog.apps.BlogConfig',  # 加入自定义app config 来register app
+    'django.contrib.admin',   # 提供admin后台ui， model注册与crud页面，权限控制，自动表单，filter等
+    'django.contrib.auth',      # auth core component, user model, group model, login/logout api, hash password sys
+    'django.contrib.contenttypes', # contenttype framework, 动态记录对象属于哪个模型，支持通用外键genericforeignkey
+    'django.contrib.sessions',   # session sys in db or cache
+    'django.contrib.messages', # notification framework
+    'django.contrib.staticfiles',  # static file management, collectstatic, static router
+    'rest_framework', #  serializer, apiview, viewset, router, auth classes, permission, parsers
+    'rest_framework_simplejwt', # access/refresh token, token verification, token refresh, token blacklist
 ]
-
+# rest configuration to use rest library, cv to add below, let rest framework to support jwt
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -84,6 +84,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'blogsite.wsgi.application'
 
+
+# 如果不使用django里的default user而是自定义的user class的话需要定义下面的config
+# 这里的blog.User不是url也不是import path
+# Django用专门格式引用model，叫做django orm model register name, django在启动时会扫描所有安装的app然后扫描models，给model register一个model identifier
+# app_label = app folder name, model name = class name, 所以User model name应该是 blog.User
 AUTH_USER_MODEL = 'blog.User'
 
 
@@ -93,7 +98,7 @@ AUTH_USER_MODEL = 'blog.User'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "django-rest-app",
+        "NAME": "django-rest-app",   # db name 
         "USER": "postgres",
         "PASSWORD": "mypassword",
         "HOST": "127.0.0.1",

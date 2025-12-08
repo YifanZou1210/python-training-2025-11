@@ -141,7 +141,7 @@ Post.objects.filter(categories__name='Python')
 ## Admin
 
 ```bash
-python manage.py createsuperuser
+python manage.py createsuperuser 
 # Username: admin, Password: admin123
 ```
 
