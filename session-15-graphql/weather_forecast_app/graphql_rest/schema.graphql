@@ -1,0 +1,65 @@
+type User {
+  id: ID!
+  name: String!
+  tasks: [TaskListItem!]!
+}
+
+type TaskListItem {
+  id: ID!
+  title: String!
+  content: String!
+  city: String!
+  userId: ID!
+}
+
+type Task {
+  id: ID!
+  title: String!
+  content: String!
+  city: String!
+  userId: ID!
+  user: User!
+  weather: Weather!
+}
+
+type Weather {
+  temperature: Float!
+  windspeed: Float!
+  weathercode: Int!
+  time: String!
+}
+
+# Query Definition
+# equal to GET method
+type Query {
+  # Get all users
+  users: [User!]!
+
+  # Get single user with their tasks (no weather)
+  user(id: ID!): User
+
+  # Get all tasks with optional filters (no weather)
+  # Path para and Query para are not seperated strictly, they all displayed as field arguments in parameters list
+  tasks(userId: ID, city: String): [TaskListItem!]!
+
+  # Get single task WITH weather forecast
+  task(id: ID!): Task
+}
+
+# Mutation Definition
+# equal to POST/PUT/PATCH/DELETE method
+type Mutation {
+  # User operations
+  createUser(name: String!): User!
+  deleteUser(id: ID!): User!
+
+  # Task operations
+  createTask(
+    title: String!
+    content: String!
+    city: String!
+    userId: ID!
+  ): Task!
+  updateTask(id: ID!, title: String, content: String, city: String): Task!
+  deleteTask(id: ID!): Task!
+}
