@@ -1533,7 +1533,45 @@ How to handle secrets:
 * 自组织协作
 * 负责每个迭代的可交付成果
 
+---
+# GenAI Day2 
 
+### **Q1. What is a text embedding and why is it useful for RAG?**
 
+A text embedding is simply a way to turn a piece of text into a numeric vector so machines can measure how “related” two pieces of text are. In RAG, this lets the system search by meaning instead of exact words. So even if the user phrases something differently from how it appears in the document, the system can still find the right content. It’s the foundation that allows RAG to do semantic search and provide accurate, grounded answers.
 
+### **Q2. What does embedding dimension mean, and why does it matter?**
+
+The dimension is just how many numbers are in each vector. Bigger vectors usually capture more detail, which can improve search accuracy, but they also cost more memory, more storage, and take longer to compare. Smaller vectors are cheaper and faster but may lose nuance in complex documents. Most RAG systems choose a dimension that balances accuracy with performance and cost.
+
+### **Q3. How do you choose an embedding model for a RAG system?**
+
+The choice depends on your documents, your traffic, and your budget. If your content is technical or sensitive to context, you choose a stronger model for better recall. If your system serves a lot of users or needs very low latency, you pick a lighter model to reduce cost and response time. You usually test a few models on real queries to see which one gives the best mix of accuracy and speed.
+
+### **Q4. Why use a vector database instead of FAISS directly?**
+
+FAISS does fast vector search, but that’s all it does. A vector database adds all the “real product” features you need: metadata filters, access control, sharding, backups, dashboards, ingestion pipelines, and API endpoints. It saves the engineering team from building a lot of infrastructure and lets you operate at scale safely. In production, these surrounding features matter just as much as the search itself.
+
+### **Q5. What role does metadata play? How does it help with access control?**
+
+Metadata gives each chunk extra information, like where it came from, who owns it, or what type of content it is. During search, it lets you filter results so a user only sees content they’re allowed to access. It also improves retrieval quality by scoping search to the right document type or product area. Without metadata, you lose both precision and security.
+
+### **Q6. Why is naïve PDF/HTML parsing not enough?**
+
+Raw text extraction throws away structure: columns merge, tables flatten, headers get mixed into body text, and page numbers sneak in. When this messy text goes into embeddings, retrieval results become noisy and unreliable. For production, you need parsing that understands layout so the meaning of the document stays intact. Otherwise your RAG system answers incorrectly even if the information exists.
+
+### **Q7. How does your system represent documents internally before building the index?**
+
+We treat a document as a hierarchy to keep structure clear. First it becomes pages, then pages break into blocks like paragraphs, headings, lists, or tables. From there we create clean, readable chunks that keep related content together. This makes the embeddings more accurate because each chunk represents a coherent section of the document.
+
+### **Q8. How does your system handle tables and charts?**
+
+Tables and charts don’t work well if treated as plain text because their meaning comes from layout and numbers. Our system detects them and converts them into structured formats that preserve rows, columns, and labels. For charts, we extract any underlying data and also keep descriptive text. This makes retrieval based on numbers or table structure much more reliable.
+
+### **Q9. How did you design your chunking strategy, and an example where bad chunking failed?**
+
+The goal is to make each chunk readable and self-contained so the vector truly represents what the user might want. Bad chunking often happens when content from different parts of the document gets mixed, or when a paragraph is split mid-thought. For example, we once split a policy section across chunks, and searches for “refund rules” returned vague or wrong parts. After fixing the chunking to keep the entire policy section together, retrieval quality improved immediately.
+### **Q10. Walk me through your full indexing pipeline.**
+
+We start by loading the raw document and running a layout-aware parser so we don’t lose structure. Then we clean the text, break it into pages and blocks, and create coherent chunks. Each chunk gets embedded into a vector along with metadata like document ID, page number, and permissions. Finally, we store everything in a vector database where it can be filtered and searched quickly during RAG queries. The end result is a clean, searchable knowledge index that stays aligned with the original documents.
 
