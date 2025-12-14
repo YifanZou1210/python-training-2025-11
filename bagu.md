@@ -1,20 +1,42 @@
-* What is Python's main characteristic regarding syntax compared to other programming languages?
+# Sessions 1-3 
+#### What is Python's main characteristic regarding syntax compared to other programming languages?
   * Python use indentation instead of curly brace `{}` as block boundary
-* What are the basic data types available in Python?
+#### What are the basic data types available in Python?
   * `int, float, str, list, tuple, dic, set, bool, None`
-* Why is indentation important in Python?
+#### Why is indentation important in Python?
   * It's symbolized code structure, begining and ending of a code block, espescially for some nested blocks, like for-loop, closure, etc
-* What happens when you try to mix incompatible data types in an operation?
-  * raise type error when they mixed, we need use explicit type conversion, like use `int()` to transder `str` into `int`
-* What is Git Flow?
+#### What happens when you try to mix incompatible data types in an operation?
+* Python is **strongly typed**, so it does not automatically convert unrelated data types.
+* When incompatible types are used in an operation, Python raises a **TypeError** at runtime.
+* This happens because the operation is not defined between those two types.
+* Examples of incompatible operations:
+  * Adding a string and an integer: `"5" + 3`
+  * Comparing unrelated types: `"10" > 2`
+  * Performing arithmetic on non-numeric objects
+* Some mixed operations work only because Python explicitly defines them:
+  * `"a" + "b"` → string concatenation
+  * `[1, 2] + [3]` → list concatenation
+* Explicit type conversion resolves most issues:
+  * `int("5") + 3`
+  * `str(3) + "5"`
+* In backend systems, these errors commonly occur when handling request parameters, JSON payloads, or database results.
+* Best practice is to validate and normalize data at system boundaries such as API layers.
+
+**Summary (key points to mention):**
+
+* Python raises a `TypeError` when incompatible data types are mixed.
+* Only operations explicitly defined for those types are allowed.
+* Explicit type conversion is required to make operations valid.
+* Most production errors come from unvalidated external input.
+#### What is Git Flow?
   * a blue print or project branch version tracking for managing feature development and mvp upgrade, fix, agenda, etc, we use independent branch like /main, /dev, /fea, etc to control collaboration and release effect
-* Explain the difference between `==` and `is` operators
+#### Explain the difference between `==` and `is` operators
   * `==` symbolizes liberal variable comparison 
   * `is` symbolizes reference address comparison in memory
-* What's the difference between implicit and explicit type conversion?
+#### What's the difference between implicit and explicit type conversion?
   * former one used when one data type transfered to another one is safe and no data loss, like int to float
   * latter one used when user would like to use, like some conversion that implicit conversion fails, etc
-* What's the difference between `if x:` and `if x == True:`?
+#### What's the difference between `if x:` and `if x == True:`?
   * former one checks if x condition is truth
   * latter one checks if x value equal to `True`, x type should be `boolean`
 
@@ -1536,42 +1558,93 @@ How to handle secrets:
 ---
 # GenAI Day2 
 
-### **Q1. What is a text embedding and why is it useful for RAG?**
+**Q1. What is a text embedding and why is it useful for RAG?**
 
-A text embedding is simply a way to turn a piece of text into a numeric vector so machines can measure how “related” two pieces of text are. In RAG, this lets the system search by meaning instead of exact words. So even if the user phrases something differently from how it appears in the document, the system can still find the right content. It’s the foundation that allows RAG to do semantic search and provide accurate, grounded answers.
+* Converts text into numeric vectors that capture semantic meaning
+* Enables semantic search rather than exact keyword matching
+* Allows retrieval even when wording differs between query and documents
+* Serves as the foundation for grounding LLM answers in retrieved context
+* **Pros:** robust to paraphrasing, scalable similarity search
+* **Cons / reminders:** embeddings are static snapshots of meaning and may miss very fine-grained intent without good chunking or reranking
 
-### **Q2. What does embedding dimension mean, and why does it matter?**
 
-The dimension is just how many numbers are in each vector. Bigger vectors usually capture more detail, which can improve search accuracy, but they also cost more memory, more storage, and take longer to compare. Smaller vectors are cheaper and faster but may lose nuance in complex documents. Most RAG systems choose a dimension that balances accuracy with performance and cost.
+**Q2. What does embedding dimension mean, and why does it matter?**
 
-### **Q3. How do you choose an embedding model for a RAG system?**
+* Indicates how many numeric features represent each text chunk
+* Higher dimensions capture richer semantics and nuance
+* Lower dimensions reduce memory, latency, and cost
+* **Pros:** higher dimensions usually improve recall on complex content
+* **Cons / reminders:** diminishing returns beyond a point; larger vectors increase storage and comparison cost
 
-The choice depends on your documents, your traffic, and your budget. If your content is technical or sensitive to context, you choose a stronger model for better recall. If your system serves a lot of users or needs very low latency, you pick a lighter model to reduce cost and response time. You usually test a few models on real queries to see which one gives the best mix of accuracy and speed.
 
-### **Q4. Why use a vector database instead of FAISS directly?**
+**Q3. How do you choose an embedding model for a RAG system?**
 
-FAISS does fast vector search, but that’s all it does. A vector database adds all the “real product” features you need: metadata filters, access control, sharding, backups, dashboards, ingestion pipelines, and API endpoints. It saves the engineering team from building a lot of infrastructure and lets you operate at scale safely. In production, these surrounding features matter just as much as the search itself.
+* Based on document domain, query complexity, latency needs, and budget
+* Stronger models improve recall on technical or ambiguous queries
+* Lighter models work better for high-throughput, low-latency systems
+* **Pros:** flexibility to optimize for accuracy or cost
+* **Cons / reminders:** model choice should be empirically tested; theoretical strength doesn’t always translate to better retrieval
 
-### **Q5. What role does metadata play? How does it help with access control?**
+**Q4. Why use a vector database instead of FAISS directly?**
 
-Metadata gives each chunk extra information, like where it came from, who owns it, or what type of content it is. During search, it lets you filter results so a user only sees content they’re allowed to access. It also improves retrieval quality by scoping search to the right document type or product area. Without metadata, you lose both precision and security.
+* FAISS handles fast nearest-neighbor search only
+* Vector databases add metadata filtering, auth, sharding, backups, APIs
+* Provide operational tooling needed for production environments
+* **Pros:** faster time-to-production, safer scaling
+* **Cons / reminders:** added operational cost and potential vendor lock-in compared to raw FAISS
 
-### **Q6. Why is naïve PDF/HTML parsing not enough?**
 
-Raw text extraction throws away structure: columns merge, tables flatten, headers get mixed into body text, and page numbers sneak in. When this messy text goes into embeddings, retrieval results become noisy and unreliable. For production, you need parsing that understands layout so the meaning of the document stays intact. Otherwise your RAG system answers incorrectly even if the information exists.
+**Q5. What role does metadata play? How does it help with access control?**
 
-### **Q7. How does your system represent documents internally before building the index?**
+* Adds contextual attributes like document source, user permissions, or tags
+* Enables filtering so users retrieve only authorized content
+* Improves precision by scoping retrieval to relevant subsets
+* **Pros:** better security and higher-quality retrieval
+* **Cons / reminders:** poorly designed metadata schemas can limit flexibility or hurt recall
 
-We treat a document as a hierarchy to keep structure clear. First it becomes pages, then pages break into blocks like paragraphs, headings, lists, or tables. From there we create clean, readable chunks that keep related content together. This makes the embeddings more accurate because each chunk represents a coherent section of the document.
 
-### **Q8. How does your system handle tables and charts?**
 
-Tables and charts don’t work well if treated as plain text because their meaning comes from layout and numbers. Our system detects them and converts them into structured formats that preserve rows, columns, and labels. For charts, we extract any underlying data and also keep descriptive text. This makes retrieval based on numbers or table structure much more reliable.
+**Q6. Why is naïve PDF/HTML parsing not enough?**
 
-### **Q9. How did you design your chunking strategy, and an example where bad chunking failed?**
+* Flattens structure and mixes unrelated text (tables, headers, footers)
+* Introduces noise that degrades embedding quality
+* Leads to incorrect or hallucinated answers in RAG
+* **Pros of advanced parsing:** cleaner chunks, better semantic alignment
+* **Cons / reminders:** layout-aware parsing is more complex and slower
 
-The goal is to make each chunk readable and self-contained so the vector truly represents what the user might want. Bad chunking often happens when content from different parts of the document gets mixed, or when a paragraph is split mid-thought. For example, we once split a policy section across chunks, and searches for “refund rules” returned vague or wrong parts. After fixing the chunking to keep the entire policy section together, retrieval quality improved immediately.
-### **Q10. Walk me through your full indexing pipeline.**
 
-We start by loading the raw document and running a layout-aware parser so we don’t lose structure. Then we clean the text, break it into pages and blocks, and create coherent chunks. Each chunk gets embedded into a vector along with metadata like document ID, page number, and permissions. Finally, we store everything in a vector database where it can be filtered and searched quickly during RAG queries. The end result is a clean, searchable knowledge index that stays aligned with the original documents.
+**Q7. How does your system represent documents internally before building the index?**
 
+* Models documents as a hierarchy: pages → blocks → chunks
+* Preserves semantic and structural boundaries
+* Produces embeddings that represent coherent ideas
+* **Pros:** improved retrieval accuracy and explainability
+* **Cons / reminders:** more preprocessing complexity and pipeline maintenance
+
+
+**Q8. How does your system handle tables and charts?**
+
+* Detects and extracts structured representations instead of raw text
+* Preserves relationships between rows, columns, and labels
+* Keeps descriptive context for semantic queries
+* **Pros:** accurate retrieval for numeric or structured questions
+* **Cons / reminders:** chart extraction can be lossy if underlying data is unavailable
+
+
+**Q9. How did you design your chunking strategy, and an example where bad chunking failed?**
+
+* Ensures chunks are self-contained and semantically complete
+* Avoids splitting concepts or merging unrelated sections
+* Poor chunking once fragmented a policy section, harming retrieval
+* **Pros:** directly improves recall and answer grounding
+* **Cons / reminders:** chunk size is a trade-off—too large hurts precision, too small loses context
+
+
+**Q10. Walk me through your full indexing pipeline.**
+
+* Parse raw documents with layout awareness
+* Clean text and organize into structured blocks
+* Chunk content and attach metadata
+* Embed chunks and store them in a vector database
+* **Pros:** traceable, scalable, and retrieval-optimized pipeline
+* **Cons / reminders:** ingestion pipelines must handle re-indexing, versioning, and data drift over time
