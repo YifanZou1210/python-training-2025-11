@@ -6,6 +6,13 @@
 #### Why is indentation important in Python?
   * It's symbolized code structure, begining and ending of a code block, espescially for some nested blocks, like for-loop, closure, etc
 #### What happens when you try to mix incompatible data types in an operation?
+**Summary:**
+* Python raises a `TypeError` when incompatible data types are mixed.
+* Only operations explicitly defined for those types are allowed.
+* Explicit type conversion is required to make operations valid.
+* Most production errors come from unvalidated external input.
+
+**Details**
 * Python is **strongly typed**, so it does not automatically convert unrelated data types.
 * When incompatible types are used in an operation, Python raises a **TypeError** at runtime.
 * This happens because the operation is not defined between those two types.
@@ -22,14 +29,29 @@
 * In backend systems, these errors commonly occur when handling request parameters, JSON payloads, or database results.
 * Best practice is to validate and normalize data at system boundaries such as API layers.
 
-**Summary (key points to mention):**
-
-* Python raises a `TypeError` when incompatible data types are mixed.
-* Only operations explicitly defined for those types are allowed.
-* Explicit type conversion is required to make operations valid.
-* Most production errors come from unvalidated external input.
 #### What is Git Flow?
-  * a blue print or project branch version tracking for managing feature development and mvp upgrade, fix, agenda, etc, we use independent branch like /main, /dev, /fea, etc to control collaboration and release effect
+**Summary**
+Git Flow is a structured Git branching strategy that separates production code from development work. It defines clear rules for how features, releases, and hotfixes move through the system. This model improves stability and coordination for teams working on scheduled releases, but it can be heavy for fast-iteration environments.
+
+###### Detailed answer
+
+* Git Flow is a **branching model** that standardizes how teams create, merge, and release code.
+* It uses two **long-lived branches**:
+
+  * `main` (or `master`) holds production-ready code only.
+  * `develop` holds the latest integrated development changes.
+* **Feature branches** (`feature/*`) are created from `develop` and used to build new functionality in isolation.
+* **Release branches** (`release/*`) are created from `develop` when a version is ready for final testing and stabilization.
+* **Hotfix branches** (`hotfix/*`) are created from `main` to quickly fix production issues.
+* After completion:
+
+  * Features merge back into `develop`.
+  * Releases merge into both `main` and `develop`.
+  * Hotfixes merge into both `main` and `develop`.
+* Git Flow works well for larger teams and products with planned release cycles.
+* It is less suitable for continuous deployment or trunk-based development due to extra branching overhead.
+
+
 #### Explain the difference between `==` and `is` operators
   * `==` symbolizes liberal variable comparison 
   * `is` symbolizes reference address comparison in memory
