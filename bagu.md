@@ -197,7 +197,13 @@ class Point:
 **4. Explain the difference between `@classmethod` and `@staticmethod`.**
 
 * `@classmethod`: Receives the **class itself (`cls`)** as the first argument; can modify class state.
+  * 类方法：以类本身cls为第一个参数
+  * 可以访问/修改类变量
+  * 常用于Factory Method, 构造逻辑
 * `@staticmethod`: Receives **no automatic first argument**; behaves like a regular function in a class.
+  * 静态方法不依赖实例self,也不依赖类cls
+  * 本质只是放在类命名空间里的普通函数
+  * 不能访问实例变量、类变量
 
 **Example:**
 
@@ -219,6 +225,7 @@ class Example:
 
  
 Used to define **getter/setter/deleter** for attributes — enabling **controlled access** like Java getters/setters.
+把方法伪装成属性，对外是访问字段，对内执行方法逻辑(getter, setter, deleter), 避免public field 直接暴露内部方法细节不安全，保持了api稳定
 
 **Example:**
 
@@ -355,7 +362,7 @@ class Animal(ABC):
   - 1:many relationship: each row in Table A can be linked to multiple rows in Table B. Implemented by having a foreign key in the “many” table referencing the primary key of the “one” table.
   - Many:many relationship: rows in Table A can be linked to multiple rows in Table B and vice versa. Implemented using a junction table with foreign keys referencing both tables.
 
-- What are transactions and isolation levels? Explain the problems each isolation level solves.
+- 🌟 What are transactions and isolation levels? Explain the problems each isolation level solves.
   - Transactions are sequences of database operations executed as a single unit. Isolation levels control visibility of changes between concurrent transactions.
 
   * Read Uncommitted: allows dirty reads; solves no problem, lowest isolation.
@@ -388,7 +395,22 @@ What is ORM? Why do we need ORM?
 ORM 将数据库表映射为编程语言对象，让开发者用对象操作数据而不写 SQL。
 优点：减少 SQL、避免注入、管理事务与关系、跨数据库迁移容易。
 
-ORM is a way to map your code’s classes to database tables so you can work with data using objects instead of writing SQL everywhere. It helps keep code cleaner, safer, and easier to maintain, especially in large codebases. You still need SQL sometimes, but ORM handles the boring boilerplate for you.
+ORM stands for Object-Relational-Mapping, a concept but not specific tool, a technique that maps object-oriented models to relational database tables, so developers can work with objects instead of writing SQL mannully. 
+
+ORM supports:
+- Automatic SQL generation 
+- Object lifecyle management 
+- Caching 
+- Transaction
+
+#### ORM vs JPA vs Hibernate 
+- ORM: a general concept or techinique 
+- JPA: stands for Java Persistence API. Java standard specification for ORM 
+  - not a framework, not provide implementation, and defines interfaces, annotations, behavior rules 
+  - support abstract interface of core APIs(`EntityManager`, `Query`, etc), annotations(`@Entity, @Id, @OneToMany`), and manage entity lifecycle and persistence rules 
+- Hibernate: a concrete ORM framework and the most common JPA implementation 
+  - offers JPA interface implementations, Advanced caching, HQL, Performance tuning options, Batch processing optimizations 
+
 
 
 ### 3. ACID 属性解释
@@ -402,18 +424,25 @@ Explain the ACID Properties
 
 确保数据库不会出现脏写、部分更新或数据丢失。
 
-ACID means a transaction is all-or-nothing (Atomic), always leaves data valid (Consistent), doesn’t get messed up by other transactions (Isolated), and stays saved once committed (Durable). Together, these properties make sure your database doesn’t end up in a broken or half-updated state.
+ACID stands for:
+- Atomicity: one transaction either fully succeed or fully fails to prevent partial updates 
+- Consistency: one transaction moves db from one valid state to another one, respecting constraints to avoid invalid states
+- Isolation: concurrent transations behave as if executed one by one to avoid diry read, non-repeatable read, phantom read 
+- Durability: once transaction is commited, result should be saved even if system crushed through disk persistence or replication 
 
 
 ### 4. CAP 定理
 
 Explain the CAP Theorem
+- States that a distributed system can only guarantee two of three requirements: Consistency, Availability, Parition Tolerance 
+- Consistency: Each Node return up-to-date write, no matter which node is queried, usual applied system like Bank balance, financial transactions 
+- Availability: Every request receives a non-error response, even during replica's failure or isolated, usually used in Social feeds, Messaging Sys
+- Parition Tolerance: The sys continues operating even if network failures between nodes 
 
-
-分布式系统无法同时满足：一致性、可用性、分区容错性；
-实际中必须在 **CP**（放弃可用） 或 **AP**（放弃强一致）中选择。
-
-CAP says a distributed system can’t give you perfect Consistency, Availability, and Partition Tolerance at the same time. Since network partitions always happen, you must pick between stronger consistency (CP) or higher availability (AP). It’s a trade-off, not a bug.
+Why P is mandatory 
+In real distributed systems:
+- Network failures are unavoidable
+- Cloud, cross-region, multi-AZ setups always risk partitions
 
 
 ### 5. SQL 与 NoSQL 的使用场景
@@ -431,7 +460,7 @@ SQL fits systems with structured data, clear relationships, and strong transacti
 
 What is Eventual Consistency?
 
-*Eventual consistency means updates might not show up instantly everywhere, but if nothing else changes, all nodes will eventually catch up and show the same data. It trades immediate correctness for better performance and availability.
+* Eventual consistency means updates might not show up instantly everywhere, but if nothing else changes, all nodes will eventually catch up and show the same data. It trades immediate correctness for better performance and availability.
 
 ---
 
@@ -517,6 +546,9 @@ HTTP (Hypertext Transfer Protocol) is a request-response protocol where clients 
 **Explain the concept of idempotency in HTTP methods**
 
 Idempotency means that performing the same HTTP request multiple times has the same effect as performing it once. For example, GET, PUT, and DELETE are idempotent; POST is generally not.
+- GET: Natively idempotency
+- PUT: Update target with request's content, target resource no change during multiple requests 
+- DELETE: same with above 
 
 **Explain the difference between HTTP and HTTPS**
 
