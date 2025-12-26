@@ -22,7 +22,7 @@ docker pull postgres:latest
 ```bash
 docker run --name my-postgres \
   -e POSTGRES_PASSWORD=mypassword \
-  -p 5432:5432 \
+  -p 5433:5432 \
   -v postgres-data:/var/lib/postgresql \
   -d postgres
 ```
@@ -33,7 +33,7 @@ That's it! PostgreSQL is now running with persistent storage.
 
 - `--name my-postgres` - Names your container
 - `-e POSTGRES_PASSWORD=mypassword` - Sets the password for user `postgres`
-- `-p 5432:5432` - Maps port 5432 (host:container)
+- `-p 5433:5432` - Maps port 5432 (host:container)
 - `-v postgres-data:/var/lib/postgresql` - Creates a named volume for data persistence
 - `-d` - Runs in detached mode (background)
 - `postgres` - The image name
@@ -53,7 +53,7 @@ Password: mypassword
 ```bash
 docker run --name my-postgres \
   -e POSTGRES_PASSWORD=mypassword \
-  -p 5432:5432 \
+  -p 5433:5432 \
   -v postgres-data:/var/lib/postgresql/data \
   -d postgres
 ```

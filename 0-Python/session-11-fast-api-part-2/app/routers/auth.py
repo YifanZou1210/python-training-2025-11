@@ -12,7 +12,7 @@ from app.dependency import DBSession
 router = APIRouter(prefix='/auth')
 
 @router.post('/register', response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register(user: UserCreate, db: DBSession):
+def register(user: UserCreate, db: Session = Depends(get_session)):
     stmt = select(User).where(User.email == user.email)
     existing_user = db.exec(stmt).first()
     if existing_user:
@@ -34,7 +34,7 @@ def register(user: UserCreate, db: DBSession):
     return db_user
 
 @router.post('/login', status_code=status.HTTP_200_OK, response_model=Token)
-def login(db: DBSession, form_data: OAuth2PasswordRequestForm = Depends() ):
+def login(db: Session = Depends(get_session), form_data: OAuth2PasswordRequestForm = Depends() ):
     print(form_data.username)
     print(form_data.password)
     user = db.exec(select(User).where(User.username == form_data.username)).first()
@@ -56,7 +56,7 @@ def login(db: DBSession, form_data: OAuth2PasswordRequestForm = Depends() ):
             detail="user not found"
         )
     
-    access_token = create_access_token(user.id)
+    access_token = create_access_token(identity=str(user.id))
     
     return {'access_token': access_token}
     
