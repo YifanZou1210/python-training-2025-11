@@ -14,7 +14,6 @@ def create_customer_with_profile():
                     address="123 haha street",
                 )
             )
-            
             session.add(customer)
             print(f'customer {customer.name}is created')
             return customer.id

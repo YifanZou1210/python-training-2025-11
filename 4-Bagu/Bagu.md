@@ -134,7 +134,7 @@ outer()
   Positional arguments → default arguments → `*args` → keyword-only arguments → `**kwargs`.
 
 * What is the difference between the `global` and `nonlocal` keywords?
-  `global` allows modifying variables at the module level. `nonlocal` allows modifying variables in the nearest enclosing non-global scope.
+  `global` allows modifying variables at the module level. `nonlocal` allows modifying variables in the nearest enclosing non-global scope. nonlocal exists in nested function
 
 * What is a common pitfall when using mutable default arguments?
   Using mutable defaults (like lists or dictionaries) can lead to unexpected shared state across function calls.
@@ -277,10 +277,8 @@ class Singleton:
 ```
 
 
-## 8. What's Factory pattern? How to implement it?
-
- 
-Provides a **method to create objects** without specifying exact class names.
+## ✅ 8. What's Factory pattern? How to implement it?
+Factory Pattern encapsulate objects creation logic and only expose a standardized creation api, which decouple business logic and concrete type creation of objects. 
 
 **Example:**
 
@@ -2520,3 +2518,243 @@ You terminate EC2, but its 50GB EBS volume is still there → you pay for 50GB.
 ### Key principle
 
 > Terminating EC2 stops compute charges, but **does not automatically delete all related resources**.
+
+
+## How do you version objects in S3?
+* Enable versioning on a bucket
+* Each object upload gets a unique version ID
+* Can restore or delete specific versions
+* Helps prevent accidental data loss
+
+## What is a pre-signed URL in S3?
+* Temporary URL granting access to a private object
+* Has an expiration time
+* Can be used for download or upload
+
+## How do you delete multiple objects in S3 at once?
+* Use console, CLI, or SDK bulk delete operations
+* Can delete by prefix or specify object keys
+* Works for versioned or non-versioned objects
+
+## How do you test a Lambda function before deploying?
+* Use the “Test” feature in AWS console
+* Pass sample event payloads
+* Check output and logs in CloudWatch
+
+## What is the maximum runtime of a Lambda function?
+* 15 minutes per invocation
+* Long-running tasks should be split or use other services
+
+## How do you set memory and timeout for Lambda?
+* Configure memory allocation in function settings
+* Timeout specifies maximum duration for execution
+* Memory allocation also affects CPU performance
+
+## How do you assign a public IP to an EC2 instance?
+* Enable auto-assign public IP when launching in a subnet
+* Use Elastic IP to have a static public IP
+* Needed for direct internet access
+
+## What is the difference between stopping and terminating an EC2 instance?
+* Stopping: instance shuts down, EBS volumes remain, can start again
+* Terminating: instance is deleted, EBS volumes may be deleted if “delete on termination” is enabled
+
+## How can you change the instance type of an EC2 instance?
+* Stop the instance
+* Select a new instance type
+* Start the instance again
+
+## How do you connect an EC2 instance to an S3 bucket?
+* Assign IAM role to EC2 with S3 access permissions
+* Use AWS CLI or SDK on the instance
+* No need for access keys in code if role is assigned
+
+## How do you monitor Lambda function errors?
+* CloudWatch Logs show runtime errors and output
+* CloudWatch Metrics track error count and invocation failures
+* Can set alarms for high error rate
+
+## How do you copy objects between S3 buckets?
+* Use console, AWS CLI (`aws s3 cp` or `aws s3 sync`), or SDK
+* Can copy within same region or cross-region
+* Preserves object metadata and versioning if configured
+
+## Explain the Method Resolution Order (MRO) and how Python handles the diamond problem.
+
+## Explain the difference between str magic method and repr magic method , and which should you implement first.
+
+## What are Abstract Base Classes (ABCs), and when would you use them instead of duck typing?
+
+## Exception Handling: When should you use each block in try/except/else/finally?
+
+## How do you design custom exceptions for a production backend application?
+
+## Explain context managers and the `with` statement. How would you create a custom one?
+
+## ACID vs Base 
+BASE and ACID describe two different consistency models used in databases, mainly in distributed systems.
+
+ACID focuses on strong consistency and correctness for transactions.
+
+* Atomicity: a transaction is all or nothing
+* Consistency: data remains valid according to rules
+* Isolation: concurrent transactions do not interfere
+* Durability: committed data is not lost
+
+BASE focuses on availability and scalability.
+
+* Basically Available: system remains available even under failures
+* Soft state: data may be temporarily inconsistent
+* Eventually consistent: data becomes consistent over time
+
+ACID is common in relational databases like RDS.
+BASE is common in distributed NoSQL systems like DynamoDB or Cassandra.
+
+## ACID/Base, which one is harder to scale? 
+
+* ACID requires strong consistency, atomic transactions, and isolation
+* Enforcing these guarantees across multiple nodes needs coordination, locking, and consensus
+* Cross-node transactions increase latency and reduce horizontal scalability
+* Scaling ACID systems usually relies on vertical scaling or complex sharding
+
+BASE systems are easier to scale because:
+
+* They relax consistency guarantees
+* Allow eventual consistency
+* Minimize coordination between nodes
+* Support horizontal scaling more naturally
+
+In short: ACID favors correctness, BASE favors scalability and availability.
+
+## What is master, core, task nodes in EMR cluster 
+In an Amazon EMR cluster, nodes are grouped by their roles in running and managing distributed big data workloads.
+* Master node
+  * Manages the cluster and coordinates jobs
+  * Runs services like YARN ResourceManager, HDFS NameNode, and cluster monitoring tools
+  * Tracks job execution and allocates resources
+  * Does not usually run user tasks
+* Core nodes
+  * Run data processing tasks
+  * Store data in HDFS
+  * Run YARN NodeManager and HDFS DataNode
+  * Form the main, persistent worker layer of the cluster
+* Task nodes
+  * Run data processing tasks only
+  * Do not store HDFS data
+  * Can be added or removed dynamically for scaling
+  * Used to handle temporary or peak workloads
+
+Master controls the cluster, core nodes store data and compute, task nodes provide additional compute capacity.
+
+## Trade offs between synchronous and asynchronous communication in backend systems 
+Synchronous and asynchronous communication each have trade-offs in backend systems, and the choice depends on latency, reliability, and scalability requirements.
+
+Synchronous:
+* Simple request-response model that is easy to design and reason about
+* Caller blocks while waiting for a response, increasing latency sensitivity
+* Tight coupling between services in terms of availability and timing
+* Failures or slow downstream services directly impact upstream services
+* Easier to ensure strong consistency across services
+
+Asynchronous:
+* Decouples services in time and availability
+* Improves system resilience and scalability
+* Caller does not wait for processing to complete
+* Introduces complexity such as message ordering, retries, and idempotency
+* Consistency is often eventual rather than immediate
+
+In practice, synchronous is preferred for user-facing queries, while asynchronous is preferred for background processing and high-throughput workflows.
+
+
+## gRPC vs REST
+
+## How to avoid cache inconsistency
+
+## How to valid data accuracy after migration 
+
+## Redis vs local cache 
+
+# Index 
+## Primary Key vs Unique Index vs Non-unique Index 
+- Primary Key: a column/combination of columns that uniquely identifies each row in a table, improve query performance and row uniqueness  
+  - only one per table 
+  - Auto-create unique index implicitly 
+  - Cannot be `NULL`
+  - Can be a single column or composite(mutiple columns)
+- Unique Index:  explicitly created index to enfore uniqueness on a column or set of columns to speed up queries 
+  - Multiple unique indexes can exist on a table
+  - May allow `NULL`(PG allows mutiple `NULL`s, behavior differs in other db)
+  - Not necessarily a primary key 
+```sql 
+create unique index idx_email on employees(email)
+```
+- Non-Unique Index(regular index): Index created solely for performance, does not enforce uniqueness 
+  - allow duplicates 
+  - can be applied to any columns 
+  - improve query speed for lookups, range queries or sorting 
+```sql
+create index idx_name on employees(name)
+```
+| Feature                          | Primary Key                               | Unique Index                     | Non-Unique Index                |
+| -------------------------------- | ----------------------------------------- | -------------------------------- | ------------------------------- |
+| Uniqueness                   | Must be unique                            | Must be unique                   | Not enforced                    |
+| NULL allowed                 | Not allowed                               | May allow NULL (depends on DB)   | Can allow NULL                  |
+| Purpose                      | Identifies each row uniquely              | Ensures column(s) are unique     | Improves query performance      |
+| Index created automatically? | Yes, automatically creates a unique index | Yes, when explicitly defined     | Yes, regular index              |
+| Number per table             | Only one                                  | Multiple allowed                 | Multiple allowed                |
+| Constraint vs Performance    | Logical constraint + performance          | Logical constraint + performance | Performance only, no constraint |
+
+## How does index improve query performance? 
+#### Core Concept 
+- index is like a book's table of contents or an ordered directory 
+- it lets db quickly locate rows without scanning the entire table 
+- without an index, db does a full table scan, checking every row with $O(n)$ complexity 
+- with an index(b-tree), searches can be done in $O(logn)$
+#### How indexes work in PSQL 
+##### Types of Index 
+
+| Type       | Structure         | Use Case                               |
+| ---------- | ----------------- | -------------------------------------- |
+| B-Tree     | Balanced tree     | Exact match, range queries, `ORDER BY` |
+| Hash       | Hash table        | Exact match only                       |
+| GIN / GiST | Specialized trees | Full-text search, JSON, arrays         |
+##### Query Acceleration Mechanism 
+1. Lookup by index 
+```sql 
+select * from employees where emp_id = 100
+```
+- with a b-tree index on `emp_id`, db can traverse tree to the value 100 
+- tc: $O(logn)$ 
+2. Range Queries 
+```sql 
+select * from employees where emp_id between 50 and 200 
+```
+- b-tree allows locating first qualifying entry and scanning sequentially through the range 
+- efficient for large tables 
+3. Sorting Optimization 
+```sql 
+select * from employees order by emp_id 
+```
+- if a b-tree index exists on `emp_id`, rows can be read in index order, avoiding a separate sort 
+4. Join Acceleration 
+```sql 
+select * 
+from employee e 
+join department d on e.dpt_id = d.dpt_id 
+```
+- indexes on `dpt_id` allow db to quickly find matching rows for the join instead of scanning one table fully 
+
+## B-Tree related to index 
+a PostgreSQL B-Tree doesn't store entire row, instead, each entry in the B-Tree contains:
+- indexed column value - key 
+  - This is value of the column you built the index on, eg: `flag = y` 
+- Row pointer - all called TID, tuple ID 
+  - This points to actual location of the row in heap table(PSQL store table rows in pages on disk)
+
+# Random 
+## Nosql db diff: cassandra - ap, dynamo/ mongoDB - cp 
+## Oracle vs mysql vs postgre vs mongoDB vs dynamo vs cassandra, tradeoff, cap, data type, 
+
+
+
+
