@@ -1,7 +1,4 @@
-"""
-手动导入services关联
-前提：stores表已通过DBeaver导入
-"""
+
 import pandas as pd
 import os
 from store_locator.app import create_app
@@ -28,10 +25,10 @@ with app.app_context():
             print(f"✗ Store {row['store_id']} not found")
             continue
         
-        # 清空现有服务
+     
         store.services = []
         
-        # 添加新服务
+
         if pd.notna(row['services']):
             for svc_name in row['services'].split('|'):
                 svc = Service.query.filter_by(name=svc_name.strip()).first()

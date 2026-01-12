@@ -1,7 +1,4 @@
-"""
-数据库模型定义
-包含所有表结构和业务逻辑
-"""
+
 from datetime import datetime
 from store_locator.app.extensions import db
 import bcrypt
@@ -17,18 +14,10 @@ role_permissions = db.Table('role_permissions',
     db.Column('permission_id', db.Integer, db.ForeignKey('permissions.id'), primary_key=True)
 )
 
-# 店铺模型
+
 
 class Store(db.Model):
-    """
-    店铺模型
-    
-    关键字段:
-    - store_id: 业务主键（如S0001）
-    - latitude/longitude: 地理坐标（用于距离计算）
-    - status: 状态（active/inactive/temporarily_closed）
-    - services: 多对多关系，店铺提供的服务
-    """
+
     __tablename__ = 'stores'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -37,11 +26,11 @@ class Store(db.Model):
     store_type = db.Column(db.String(20), nullable=False, index=True)
     status = db.Column(db.String(30), nullable=False, default='active', index=True)
     
-    # 地理坐标（复合索引）
+
     latitude = db.Column(db.Numeric(10, 7), nullable=False)
     longitude = db.Column(db.Numeric(10, 7), nullable=False)
     
-    # 地址信息
+
     address_street = db.Column(db.String(255), nullable=False)
     address_city = db.Column(db.String(100), nullable=False)
     address_state = db.Column(db.String(2), nullable=False)
@@ -49,7 +38,7 @@ class Store(db.Model):
     address_country = db.Column(db.String(3), nullable=False, default='USA')
     phone = db.Column(db.String(20))
     
-    # 营业时间
+
     hours_mon = db.Column(db.String(20))
     hours_tue = db.Column(db.String(20))
     hours_wed = db.Column(db.String(20))
@@ -61,16 +50,16 @@ class Store(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # 关系
+
     services = db.relationship('Service', secondary=store_services, backref='stores')
     
-    # 复合索引
+
     __table_args__ = (
         db.Index('idx_store_coordinates', 'latitude', 'longitude'),
     )
     
     def to_dict(self, include_distance=False, distance=None):
-        """转换为字典格式"""
+
         return {
             'id': self.store_id,
             'name': self.name,
@@ -103,7 +92,7 @@ class Store(db.Model):
         }
     
     def is_open_now(self):
-        """判断店铺当前是否营业"""
+
         if self.status != 'active':
             return False
         
@@ -125,22 +114,16 @@ class Store(db.Model):
         except:
             return False
 
-# ============================================================
-# 服务模型
-# ============================================================
 
 class Service(db.Model):
-    """店铺服务"""
+
     __tablename__ = 'services'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False, index=True)
 
-# ============================================================
-# 用户模型
-# ============================================================
 
 class User(db.Model):
-    """用户模型"""
+
     __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -159,32 +142,26 @@ class User(db.Model):
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
 
     def has_permission(self, perm):
-        """检查权限"""
+
         return any(p.name == perm for p in self.role.permissions)
 
-# ============================================================
-# 角色和权限模型
-# ============================================================
 
 class Role(db.Model):
-    """角色模型"""
+
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     permissions = db.relationship('Permission', secondary=role_permissions, backref='roles')
 
 class Permission(db.Model):
-    """权限模型"""
+
     __tablename__ = 'permissions'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
 
-# ============================================================
-# Refresh Token模型
-# ============================================================
 
 class RefreshToken(db.Model):
-    """Refresh Token存储"""
+
     __tablename__ = 'refresh_tokens'
     
     id = db.Column(db.Integer, primary_key=True)

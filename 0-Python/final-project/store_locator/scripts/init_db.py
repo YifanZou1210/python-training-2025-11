@@ -1,7 +1,4 @@
-"""
-数据库初始化脚本
-Docker版本：自动创建数据库
-"""
+
 from store_locator.app import create_app
 from store_locator.app.extensions import db
 from store_locator.app.models import Role, Permission, Service
@@ -11,16 +8,9 @@ import os
 import time
 
 def create_database_if_not_exists():
-    """
-    创建数据库（如果不存在）
-    
-    Docker PostgreSQL默认只有postgres数据库
-    需要手动创建store_locator数据库
-    """
-    # 从DATABASE_URL提取连接信息
+
     db_url = os.getenv('DATABASE_URL')
-    
-    # 解析URL: postgresql://user:pass@host:port/dbname
+
     parts = db_url.replace('postgresql://', '').split('/')
     db_name = parts[-1]  # store_locator
     conn_info = parts[0]  # postgres:mypassword@localhost:5433
@@ -29,19 +19,19 @@ def create_database_if_not_exists():
     user, password = user_pass.split(':')
     host, port = host_port.split(':')
     
-    # 连接到默认postgres数据库
+
     try:
         conn = psycopg2.connect(
             host=host,
             port=port,
             user=user,
             password=password,
-            database='postgres'  # 连接默认数据库
+            database='postgres' 
         )
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cursor = conn.cursor()
         
-        # 检查数据库是否存在
+
         cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = '{db_name}'")
         exists = cursor.fetchone()
         

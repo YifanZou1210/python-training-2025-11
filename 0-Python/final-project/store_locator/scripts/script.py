@@ -3,7 +3,7 @@ from store_locator.run import app  # 直接导入你现有的 app
 from store_locator.app.extensions import db
 from store_locator.app.models import User
 
-# 要更新的用户和密码
+
 users_to_update = [
     {"email": "admin@test.com", "password": "AdminTest123!"},
     {"email": "marketer@test.com", "password": "MarketerTest123!"},

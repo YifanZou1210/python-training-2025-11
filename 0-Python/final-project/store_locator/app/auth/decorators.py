@@ -6,7 +6,7 @@ from store_locator.app.models import User
 def jwt_required_custom(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        # 明确：只能是 access token
+
         verify_jwt_in_request(refresh=False)
 
         user_id = int(get_jwt_identity())
